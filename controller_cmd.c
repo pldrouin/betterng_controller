@@ -78,6 +78,11 @@ ssize_t send_recv_cmd(const int fd, const struct cmd* ocmd, const uint8_t iid, s
       if((ret=recv_cmd(fd, icmd))>0 && icmd->id==PING_RESP_ID) break;
     }
     //Synced
+
+    if(tcflush(fd, TCIFLUSH) < 0) {
+      perror("tcflush serial");
+      return errno;
+    }
   }
 
   return 0;
