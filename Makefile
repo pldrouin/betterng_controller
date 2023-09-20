@@ -1,23 +1,24 @@
+EXEC = controller
 SRCS = $(wildcard *.c)
-EXES = $(SRCS:.c=)
-LDEPS = $(SRCS:.c=.d)
+OBJS = $(SRCS:.c=.o)
+DEPS = $(SRCS:.c=.d)
 
-all: $(EXES)
+all: $(EXEC)
 
-$(LDEPS): %.d: %.c
+$(DEPS): %.d: %.c %.h
 	@echo "Generating dependency file $@"
 	@set -e; rm -f $@
-	@$(CC) -M $(CFLAGS) -MT $(<:.c=.o) $< > $@.tmp
-	@sed 's,\($*\)\.o[:]*,\1 $@ : ,g' < $@.tmp > $@
+	@$(CC) $(ALL_CFLAGS) -M $(INCLUDEDIRS) $< > $@.tmp
+	@sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.tmp > $@
 	@rm -f $@.tmp
 
-include $(LDEPS)
+include $(DEPS)
 
-$(EXES): % : %.c
-	$(CC) $(CFLAGS) -o $@ $<
+$(EXEC): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
 	rm -f *.o *.d
 
 clear: clean
-	rm -f $(EXES)
+	rm -f $(EXEC)

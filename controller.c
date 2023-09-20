@@ -1,26 +1,4 @@
-#define _XOPEN_SOURCE
-#define _XOPEN_SOURCE_EXTENDED
-#define _BSD_SOURCE
-#define _DEFAULT_SOURCE
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <termios.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <time.h>
-#include <stdint.h>
-#include <inttypes.h>
-#include <sys/types.h>
-
-#ifdef __FreeBSD__
-#define B500000 500000
-#define B1000000 1000000
-#endif 
-
-int main(const int nargs, const char* args[]);
+#include "controller.h"
 
 int main(const int nargs, const char* args[])
 {
@@ -85,8 +63,8 @@ int main(const int nargs, const char* args[])
   if(speed) cfsetspeed(&options, speed);
 
   cfmakeraw(&options);
-  options.c_cc[VMIN] = 1;
-  options.c_cc[VTIME] = 0;
+  options.c_cc[VMIN] = 0;
+  options.c_cc[VTIME] = 1;
 
   if((rc = tcsetattr(fd, TCSANOW, &options)) < 0) {
     perror("tcsetattr serial");
@@ -97,6 +75,24 @@ int main(const int nargs, const char* args[])
     perror("tcflush serial");
     return 1;
   }
+
+  struct cmd ocmd, icmd;
+  ssize_t ret;
+  build_ping_cmd(&ocmd);
+
+  if((ret=send_read_cmd(fd, &ocmd, PING_REQ_ID, &icmd))<=0) {
+    fprintf(stderr,"send_cmd returned %li!\n",ret);
+    return 1;
+  }
+  printf("Ping succeeded!\n");
+
+  build_reset_cmd(&ocmd);
+
+  if((ret=send_cmd(fd, &ocmd))<=0) {
+    fprintf(stderr,"send_cmd returned %li!\n",ret);
+    return 1;
+  }
+  close(fd);
 
   return 0;
 }
