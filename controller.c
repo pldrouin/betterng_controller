@@ -80,7 +80,7 @@ int main(const int nargs, const char* args[])
   ssize_t ret;
   build_ping_cmd(&ocmd);
 
-  if((ret=send_recv_cmd(fd, &ocmd, PING_REQ_ID, &icmd))<=0) {
+  if((ret=send_recv_cmd(fd, &ocmd, PING_RESP_ID, &icmd))!=CMD_NBYTES(PING_RESP_ID)) {
     fprintf(stderr,"send_cmd returned %li!\n",ret);
     return 1;
   }

@@ -11,7 +11,7 @@
 
 #define FIRST_TWO_BYTE_CMD_INDEX 255
 
-#define CMD_NBYTES(cmd) (2+(cmd->id>=FIRST_TWO_BYTE_CMD_INDEX))
+#define CMD_NBYTES(id) (2+(id>=FIRST_TWO_BYTE_CMD_INDEX))
 
 #define PING_REQ_ID 0
 #define PING_RESP_ID 0

@@ -5,7 +5,7 @@ static inline bool check_two_bytes(const struct cmd* cmd){return (cmd->byte2==cm
 
 ssize_t send_cmd(const int fd, const struct cmd* cmd)
 {
-  ssize_t nbytes=CMD_NBYTES(cmd);
+  ssize_t nbytes=CMD_NBYTES(cmd->id);
   ssize_t written=write(fd, cmd, nbytes);
   ssize_t total=written;
 
@@ -28,7 +28,7 @@ ssize_t recv_cmd(const int fd, struct cmd* cmd)
 
   if(ret<=0) return ret;
 
-  ssize_t nbytes=CMD_NBYTES(cmd);
+  ssize_t nbytes=CMD_NBYTES(cmd->id);
 
   while(nbytes>ret) {
     nbytes-=ret;
@@ -47,15 +47,11 @@ ssize_t send_recv_cmd(const int fd, const struct cmd* ocmd, const uint8_t iid, s
   for(;;) {
     ssize_t ret=send_cmd(fd, ocmd);
 
-    if(ret!=CMD_NBYTES(ocmd)) return ret;
+    if(ret!=CMD_NBYTES(ocmd->id)) return ret;
 
-    for(;;) {
-      ret=recv_cmd(fd, icmd);
+    ret=recv_cmd(fd, icmd);
 
-      if(ret!=0) break;
-    }
-
-    if(ret==CMD_NBYTES(icmd) && icmd->id==iid) return ret;
+    if(ret==CMD_NBYTES(icmd->id) && icmd->id==iid) return ret;
 
     //Need synchronisation
 
