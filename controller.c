@@ -76,19 +76,16 @@ int main(const int nargs, const char* args[])
     return 1;
   }
 
-  struct cmd ocmd, icmd;
+  struct req_resp rr;
   ssize_t ret;
-  build_ping_cmd(&ocmd);
 
-  if((ret=send_recv_cmd(fd, &ocmd, PING_RESP_ID, &icmd))!=CMD_NBYTES(PING_RESP_ID)) {
+  if((ret=send_recv_one_byte_cmd(fd, PING, &rr))!=CMD_NBYTES(PING_RESP_ID)) {
     fprintf(stderr,"send_cmd returned %li!\n",ret);
     return 1;
   }
   printf("Ping succeeded!\n");
 
-  build_reset_cmd(&ocmd);
-
-  if((ret=send_cmd(fd, &ocmd))<=0) {
+  if((ret=send_recv_one_byte_cmd(fd, RESET, &rr))!=CMD_NBYTES(RESET_RESP_ID)) {
     fprintf(stderr,"send_cmd returned %li!\n",ret);
     return 1;
   }
