@@ -64,7 +64,7 @@ int main(const int nargs, const char* args[])
 
   cfmakeraw(&options);
   options.c_cc[VMIN] = 0;
-  options.c_cc[VTIME] = 1;
+  options.c_cc[VTIME] = 0;
 
   if((rc = tcsetattr(fd, TCSANOW, &options)) < 0) {
     perror("tcsetattr serial");
@@ -76,9 +76,12 @@ int main(const int nargs, const char* args[])
     return 1;
   }
 
+  struct cmd cmd;
   struct req_resp rr;
+  uint8_t byte;
   ssize_t ret;
 
+  /*
   if((ret=send_recv_one_byte_cmd(fd, PING, &rr))!=CMD_NBYTES(PING_RESP_ID)) {
     fprintf(stderr,"send_cmd returned %li!\n",ret);
     return 1;
@@ -88,6 +91,28 @@ int main(const int nargs, const char* args[])
   if((ret=send_recv_one_byte_cmd(fd, RESET, &rr))!=CMD_NBYTES(RESET_RESP_ID)) {
     fprintf(stderr,"send_cmd returned %li!\n",ret);
     return 1;
+  }
+  */
+  /*
+  ret=recv_cmd(fd, &cmd);
+  printf("Received %li bytes\n!",ret);
+  printf("Command is %u %u %u\n",cmd.id,cmd.byte1,cmd.byte2);
+  */
+
+  for(;;) {
+
+    if(ret=read(fd, &byte, 1)>0) {
+
+      do {
+        printf(" %02X",byte);
+
+      } while(ret=read(fd, &byte, 1)>0);
+      printf("\n");
+      fflush(stdout);
+
+    } else {
+      usleep(10);
+    }
   }
   close(fd);
 

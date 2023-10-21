@@ -8,21 +8,13 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <errno.h>
-
-#define FIRST_TWO_BYTE_CMD_INDEX 255
-
-#define CMD_NBYTES(id) (2+(id>=FIRST_TWO_BYTE_CMD_INDEX))
-
-#define PING_REQ_ID 0
-#define PING_RESP_ID 0
-
-#define RESET_REQ_ID 1
-#define RESET_RESP_ID 1
+#include "cmd_ids.h"
 
 struct cmd{
   uint8_t id;
   uint8_t byte1;
   uint8_t byte2;
+  uint8_t byte3;
 };
 
 struct req_resp{
@@ -31,11 +23,19 @@ struct req_resp{
   uint8_t exp_resp_id;
 };
 
-#define BUILD_ONE_BYTE_CMD(cmd, ID) ((cmd)->byte1=(cmd)->id=ID ## _REQ_ID)
-#define BUILD_TWO_BYTES_CMD(cmd, ID, value) ((cmd)->id=ID ## _REQ_ID; (cmd)->byte1=value; (cmd)->byte2=(cmd)->id+(cmd)->byte1)
+#define check_one_byte(cmd) ((cmd)->byte1==(cmd)->id)
+#define check_two_bytes(cmd) ((cmd)->byte2==(cmd)->id+(cmd)->byte1)
+#define check_three_bytes(cmd) ((cmd)->byte3==(cmd)->id+(cmd)->byte1+(cmd)->byte2)
 
-static inline void build_ping_cmd(struct cmd* cmd){cmd->byte1=cmd->id=PING_REQ_ID;}
-static inline void build_reset_cmd(struct cmd* cmd){cmd->byte1=cmd->id=RESET_REQ_ID;}
+#define calc_check_one_byte(cmd) ((cmd)->byte1=(cmd)->id)
+#define calc_check_two_bytes(cmd) ((cmd)->byte2=(cmd)->id+(cmd)->byte1)
+#define calc_check_three_bytes(cmd) ((cmd)->byte3=(cmd)->id+(cmd)->byte1+(cmd)->byte2)
+
+#define BUILD_ONE_BYTE_CMD(cmd, ID) ((cmd)->id=ID ## _REQ_ID; calck_check_one_byte(cmd))
+#define BUILD_TWO_BYTES_CMD(cmd, ID, value) ((cmd)->id=ID ## _REQ_ID; (cmd)->byte1=value; calc_check_two_bytes(cmd))
+
+static inline void build_ping_cmd(struct cmd* cmd){cmd->byte1=cmd->id=PING_CMD_ID;}
+static inline void build_reset_cmd(struct cmd* cmd){cmd->byte1=cmd->id=RESET_CMD_ID;}
 
 ssize_t _send_cmd(const int fd, const struct cmd* cmd);
 ssize_t recv_cmd(const int fd, struct cmd* cmd);
