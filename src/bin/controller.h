@@ -22,13 +22,11 @@
 #include <inttypes.h>
 #include <sys/types.h>
 
-#ifdef __FreeBSD__
-#define B500000 500000
-#define B1000000 1000000
-#endif 
-
+#include "serial_link.h"
+#include "globals.h"
+#include "config.h"
 #include "controller_cmd.h"
 
-int main(const int nargs, const char* args[]);
+int main(int nargs, const char* args[]);
 
 #endif

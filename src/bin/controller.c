@@ -1,120 +1,39 @@
 #include "controller.h"
 
-int main(const int nargs, const char* args[])
+struct globals gGlobals;
+
+int main(int nargs, const char* args[])
 {
-  int fd;
-  speed_t speed=0;
 
   if(nargs<2) {
-    fprintf(stderr,"Usage: %s device [baud_rate]\n",args[0]);
+    fprintf(stderr,"Usage: %s device baud_rate [commands]\n",args[0]);
     return 1;
   }
 
   fprintf(stderr,"Opening '%s'\n",args[1]);
-  fd = open(args[1], O_RDWR);
+  sl_device sl_dev;
 
-  if(fd < 0) {
-    perror("open");
-    return 1;
-  }
+  sl_init(&sl_dev);
+  uint32_t sbuf;
+  sscanf(args[2],"%" PRIu32, &sbuf);
 
-  fcntl(fd, F_SETFL, 0);
+  args+=3;
+  nargs-=3;
+  gGlobals.nargs=nargs;
+  gGlobals.args=args;
 
-  if(nargs>2) {
-    uint32_t sbuf;
-    sscanf(args[2],"%" PRIu32, &sbuf);
+  //if(sl_start(&sl_dev, args[1], sbuf)<0) return -1;
 
-    switch(sbuf) {
+  config(args, nargs);
+  return 0;
 
-      case 9600:
-	speed=B9600;
-	break;
-
-      case 19200:
-	speed=B19200;
-	break;
-
-      case 38400:
-	speed=B38400;
-	break;
-
-      case 57600:
-	speed=B57600;
-	break;
-
-      case 115200:
-	speed=B115200;
-	break;
-
-      default:
-	fprintf(stderr,"baud rate '%s' is invalid!\n",args[2]);
-	return 1;
-    }
-  }
-
-  struct termios options;
-  int rc;
-
-  if((rc = tcgetattr(fd, &options)) < 0) {
-    perror("tcgetattr");
-    return 1;
-  }
-
-  if(speed) cfsetspeed(&options, speed);
-
-  cfmakeraw(&options);
-  options.c_cc[VMIN] = 0;
-  options.c_cc[VTIME] = 0;
-
-  if((rc = tcsetattr(fd, TCSANOW, &options)) < 0) {
-    perror("tcsetattr serial");
-    return 1;
-  }
-
-  if(tcflush(fd, TCIOFLUSH) < 0) {
-    perror("tcflush serial");
-    return 1;
-  }
-
-  struct cmd cmd;
   struct req_resp rr;
-  uint8_t byte;
-  ssize_t ret;
 
-  /*
-  if((ret=send_recv_one_byte_cmd(fd, PING, &rr))!=CMD_NBYTES(PING_RESP_ID)) {
-    fprintf(stderr,"send_cmd returned %li!\n",ret);
-    return 1;
+  if(!send_receive_ping_cmd(&sl_dev, &rr)) {
+    printf("Ping succeeded!\n");
   }
-  printf("Ping succeeded!\n");
 
-  if((ret=send_recv_one_byte_cmd(fd, RESET, &rr))!=CMD_NBYTES(RESET_RESP_ID)) {
-    fprintf(stderr,"send_cmd returned %li!\n",ret);
-    return 1;
-  }
-  */
-  /*
-  ret=recv_cmd(fd, &cmd);
-  printf("Received %li bytes\n!",ret);
-  printf("Command is %u %u %u\n",cmd.id,cmd.byte1,cmd.byte2);
-  */
-
-  for(;;) {
-
-    if(ret=read(fd, &byte, 1)>0) {
-
-      do {
-        printf(" %02X",byte);
-
-      } while(ret=read(fd, &byte, 1)>0);
-      printf("\n");
-      fflush(stdout);
-
-    } else {
-      usleep(10);
-    }
-  }
-  close(fd);
+  sl_close(&sl_dev);
 
   return 0;
 }

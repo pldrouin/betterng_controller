@@ -1,6 +1,6 @@
 EDIR	=	src/bin
 
-EINCLUDEDIRS	=	-Iinclude
+EINCLUDEDIRS	=	-Iinclude -I$(LIBARGSDIR) -I$(LIBHTDIR)
 ELIBS	=	-Llib -lcontroller -lpthread
 
 ECFLAGS	=	$(LCFLAGS) $(EINCLUDEDIRS)
