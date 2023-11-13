@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "ht.h"
 
+#include "serial_link.h"
+
 struct globals
 {
   struct ht* ht;
@@ -20,6 +22,8 @@ struct globals
   int oldstderr;
   int oout;
   int eout;
+
+  sl_device sl_dev;
 };
 
 extern struct globals gGlobals;

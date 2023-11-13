@@ -16,6 +16,8 @@
 
 #include <sys/select.h>
 
+#include "utils.h"
+
 #define SERIAL_READ_US_TIMEOUT (10000)
 
 typedef struct

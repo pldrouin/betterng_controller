@@ -1,5 +1,7 @@
 #include "config.h"
 
+#define HT_SET_FUNC(func) (ht_set(gGlobals.ht, #func, config_ ## func))
+
 int config()
 {
   gGlobals.fptra=NULL;
@@ -65,15 +67,51 @@ int config()
 
 void config_ht_populate()
 {
-  ht_set(gGlobals.ht, "config", config_config);
-  ht_set(gGlobals.ht, "olog", config_olog);
-  ht_set(gGlobals.ht, "elog", config_elog);
-  ht_set(gGlobals.ht, "prompt", config_prompt);
+  HT_SET_FUNC(config);
+
+  HT_SET_FUNC(help);
+  HT_SET_FUNC(olog);
+  HT_SET_FUNC(elog);
+  HT_SET_FUNC(prompt);
+
+  HT_SET_FUNC(ping);
+  HT_SET_FUNC(reset);
+
+  HT_SET_FUNC(get_fan_rpm);
+  HT_SET_FUNC(get_fan_voltage);
+  HT_SET_FUNC(get_fan_voltage_target);
+  HT_SET_FUNC(fan_adc_calibration);
+  HT_SET_FUNC(switch_fan_control);
+  HT_SET_FUNC(get_fan_output);
+  HT_SET_FUNC(set_fan_output);
+  HT_SET_FUNC(get_fan_voltage_response);
+  HT_SET_FUNC(set_fan_voltage_response);
+}
+
+int config_help(void)
+{
+  printf(BSTR "config" UBSTR " configuration_file\n"); 
+  printf(BSTR "olog" UBSTR " output_log_file\n"); 
+  printf(BSTR "elog" UBSTR " error_log_file\n"); 
+  printf(BSTR "prompt" UBSTR "\n"); 
+  printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
+  printf(BSTR "get_fan_voltage" UBSTR " fan_id\n"); 
+  printf(BSTR "get_fan_voltage_target" UBSTR " fan_id\n"); 
+  printf(BSTR "fan_adc_calibration" UBSTR " fan_id\n"); 
+  printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/manual\n"); 
+  printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
+  printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout d2vdout2\n"); 
+  return 0;
 }
 
 int config_config(void)
 {
-  safegetnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf);
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing configuration file name!\n",__func__);
+    return -1;
+  }
 
   //If we switch to interactive mode (reading instructions from standard
   //input)
@@ -106,7 +144,10 @@ int config_config(void)
 //Output file log, redirecting the standard output
 int config_olog(void)
 {
-  safegetnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf);
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing output log file name!\n",__func__);
+    return -1;
+  }
   fflush(stdout);
   close(gGlobals.oout);
 
@@ -122,7 +163,10 @@ int config_olog(void)
 //Output error file log, redirecting the standard error
 int config_elog(void)
 {
-  safegetnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf);
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing error log file name!\n",__func__);
+    return -1;
+  }
   fflush(stderr);
   close(gGlobals.eout);
 
@@ -171,10 +215,11 @@ next_line:
       while((gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf))>0) {
 	cfunct=(int (*)(void))ht_get(gGlobals.ht, gGlobals.pbuf);
 
-	if(cfunct) cfunct();
+	if(cfunct) {
+	  if(cfunct()==0) goto next_line;
 
-	else {
-	  fprintf(stderr,"%s: Error: Unknown parameter: '%s'\n",__func__,gGlobals.pbuf);
+	} else {
+	  fprintf(stderr,"%s: Error: Unknown command: '%s'\n",__func__,gGlobals.pbuf);
 	  free(lineptr);
 	  goto next_line;
 	}
@@ -204,5 +249,199 @@ next_line:
   gGlobals.nargs=oldnargs;
   gGlobals.args=oldargs;
   gGlobals.parc=oldparc;
+  return 0;
+}
+
+int config_ping(void)
+{
+  int ret=send_receive_ping_cmd(&gGlobals.sl_dev);
+
+  if(ret) fprintf(stderr,"%s: Error: Ping failed!\n",__func__);
+  return ret;
+}
+
+int config_reset(void)
+{
+  int ret=send_receive_reset_cmd(&gGlobals.sl_dev);
+
+  if(ret) fprintf(stderr,"%s: Error: Reset failed!\n",__func__);
+  return ret;
+}
+
+int config_get_fan_rpm(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint16_t rpm;
+  int ret=send_receive_get_fan_rpm_cmd(&gGlobals.sl_dev, id, &rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan RPM failed!\n",__func__);
+    return ret;
+  }
+  printf("%u\n", rpm);
+  return 0;
+}
+
+int config_get_fan_voltage(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint16_t voltage;
+  int ret=send_receive_get_fan_voltage_cmd(&gGlobals.sl_dev, id, &voltage);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan voltage failed!\n",__func__);
+    return ret;
+  }
+  printf("%u mV\n", voltage);
+  return 0;
+}
+
+int config_get_fan_voltage_target(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint16_t voltage;
+  int ret=send_receive_get_fan_voltage_target_cmd(&gGlobals.sl_dev, id, &voltage);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan voltage target failed!\n",__func__);
+    return ret;
+  }
+  printf("%u mV\n", voltage);
+  return 0;
+}
+
+int config_fan_adc_calibration(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int ret=send_receive_fan_adc_calibration_cmd(&gGlobals.sl_dev, id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Fan ADC calibration request failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_switch_fan_control(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan mode!\n",__func__);
+    return -1;
+  }
+  tolowerstr(gGlobals.pbuf);
+  uint8_t mode;
+
+  if(!argsdiffer(gGlobals.pbuf, "voltage")) mode=FAN_VOLTAGE_MODE;
+
+  else if(!argsdiffer(gGlobals.pbuf, "pwm")) mode=FAN_PWM_MODE;
+
+  else if(!argsdiffer(gGlobals.pbuf, "manual")) mode=FAN_MANUAL_MODE;
+
+  else {
+    fprintf(stderr, "%s: Error: Fan control mode '%s' is invalid!\n", __func__, gGlobals.pbuf);
+    return -1;
+  }
+  int ret=send_receive_switch_fan_control_cmd(&gGlobals.sl_dev, id, mode);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Switch fan control mode failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_output(void)
+{
+  uint8_t id;
+  uint8_t output;
+  CONFIG_GET_FAN_ID(id);
+
+  int ret=send_receive_get_fan_output_cmd(&gGlobals.sl_dev, id, &output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan output failed!\n",__func__);
+    return ret;
+  }
+  printf("%u\n",output);
+  return 0;
+}
+
+int config_set_fan_output(void)
+{
+  uint8_t id;
+  uint8_t output;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan output value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &output);
+  int ret=send_receive_set_fan_output_cmd(&gGlobals.sl_dev, id, output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan output failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_voltage_response(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint16_t vnoout;
+  uint16_t dvdout;
+  int16_t d2vdout2;
+
+  int ret=send_receive_get_fan_voltage_response_cmd(&gGlobals.sl_dev, id, &vnoout, &dvdout, &d2vdout2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan voltage response failed!\n",__func__);
+    return ret;
+  }
+  printf("v_no_out: %u mV\n",vnoout);
+  printf("dvdout: %u *4 uV/output\n",dvdout);
+  printf("d2vdout2: %u *4 uV/output^2\n",d2vdout2);
+  return 0;
+}
+int config_set_fan_voltage_response(void)
+{
+  uint8_t id;
+  uint16_t vnoout;
+  uint16_t dvdout;
+  int16_t d2vdout2;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan v_no_out value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu16, &vnoout);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan dvdout value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu16, &dvdout);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan d2vdout2 value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNi16, &d2vdout2);
+  int ret=send_receive_set_fan_voltage_response_cmd(&gGlobals.sl_dev, id, vnoout, dvdout, d2vdout2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan voltage response failed!\n",__func__);
+    return ret;
+  }
   return 0;
 }
