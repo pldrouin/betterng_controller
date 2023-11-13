@@ -102,7 +102,7 @@ int config_help(void)
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
   printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
-  printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout d2vdout2\n"); 
+  printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout\n"); 
   return 0;
 }
 
@@ -408,8 +408,8 @@ int config_get_fan_voltage_response(void)
     return ret;
   }
   printf("v_no_out: %u mV\n",vnoout);
-  printf("dvdout: %u *4 uV/output\n",dvdout);
-  printf("d2vdout2: %u *4 uV/output^2\n",d2vdout2);
+  printf("dvdout: %u mV at max output\n",dvdout);
+  printf("d2vdout2: %u mV at max output^2\n",d2vdout2);
   return 0;
 }
 int config_set_fan_voltage_response(void)
@@ -417,7 +417,6 @@ int config_set_fan_voltage_response(void)
   uint8_t id;
   uint16_t vnoout;
   uint16_t dvdout;
-  int16_t d2vdout2;
   CONFIG_GET_FAN_ID(id);
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
@@ -431,13 +430,7 @@ int config_set_fan_voltage_response(void)
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu16, &dvdout);
-
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
-    fprintf(stderr,"%s: Error: Missing fan d2vdout2 value!\n",__func__);
-    return -1;
-  }
-  sscanf(gGlobals.pbuf, "%" SCNi16, &d2vdout2);
-  int ret=send_receive_set_fan_voltage_response_cmd(&gGlobals.sl_dev, id, vnoout, dvdout, d2vdout2);
+  int ret=send_receive_set_fan_voltage_response_cmd(&gGlobals.sl_dev, id, vnoout, dvdout);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan voltage response failed!\n",__func__);

@@ -409,7 +409,7 @@ void *sl_read_thread(void *param)
 
       for(b=1; b<cmd_nbytes; ++b) check+=cmd_start[b];
       check=~check;
-      DEBUG_PRINT2("cmd_nbytes is %u, check should be %u vs %u\n",cmd_nbytes,check,cmd_start[cmd_nbytes]);
+      DEBUG_PRINT2("cmd_nbytes is %u, check should be 0x%02x vs 0x%02x\n",cmd_nbytes,check,cmd_start[cmd_nbytes]);
 
       //If checksum matches, we assume sync is achieved
       if(check==cmd_start[cmd_nbytes]) {

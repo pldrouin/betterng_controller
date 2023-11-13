@@ -90,10 +90,10 @@ int send_receive_get_fan_voltage_response_cmd(sl_device *sl_dev, const uint8_t i
   return 0;
 }
 
-int send_receive_set_fan_voltage_response_cmd(sl_device *sl_dev, const uint8_t id, const uint16_t vnoout, const uint16_t dvdout, const int16_t d2vdout2)
+int send_receive_set_fan_voltage_response_cmd(sl_device *sl_dev, const uint8_t id, const uint16_t vnoout, const uint16_t dvdout)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(vnoout>>8), (uint8_t)vnoout, (uint8_t)(dvdout>>8), (uint8_t)dvdout, (uint8_t)(d2vdout2>>8), (uint8_t)d2vdout2}, 7},{ACK_CMD_ID}};
+  struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(vnoout>>8), (uint8_t)vnoout, (uint8_t)(dvdout>>8), (uint8_t)dvdout}, 5},{ACK_CMD_ID}};
   int ret=send_recv_cmd(sl_dev, &rr);
 
   if(ret) return ret;

@@ -35,6 +35,6 @@ int send_receive_switch_fan_control_cmd(sl_device *sl_dev, const uint8_t id, con
 int send_receive_get_fan_output_cmd(sl_device *sl_dev, const uint8_t id, uint8_t* output);
 int send_receive_set_fan_output_cmd(sl_device *sl_dev, const uint8_t id, const uint8_t output);
 int send_receive_get_fan_voltage_response_cmd(sl_device *sl_dev, const uint8_t id, uint16_t* v_no_out, uint16_t* dvdout, int16_t* d2vdout2);
-int send_receive_set_fan_voltage_response_cmd(sl_device *sl_dev, const uint8_t id, const uint16_t vnoout, const uint16_t dvdout, const int16_t d2vdout2);
+int send_receive_set_fan_voltage_response_cmd(sl_device *sl_dev, const uint8_t id, const uint16_t vnoout, const uint16_t dvdout);
 
 #endif
