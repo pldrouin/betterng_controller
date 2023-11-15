@@ -1,9 +1,9 @@
 #include "serial.h"
 
-#define DEBUG_PRINT printf
-#define printtime printtime
-//#define DEBUG_PRINT(...)
-//#define printtime(...)
+//#define DEBUG_PRINT printf
+//#define printtime printtime
+#define DEBUG_PRINT(...)
+#define printtime(...)
 //#define DEBUG_PRINT2 printf
 #define DEBUG_PRINT2(...)
 

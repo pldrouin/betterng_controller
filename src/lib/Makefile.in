@@ -1,7 +1,7 @@
 LDIR		=	src/lib
 
 LCFLAGS	=	$(CFLAGS) -I$(BIGNGFIRMWARESRC) -I$(LIBARGSDIR) -I$(LIBHTDIR)
-LLIBS		=	
+LLIBS		= -lm
 
 ALLINCS_ORIG	=	$(wildcard $(LDIR)/*.h)
 ALLINCS		=	$(addprefix include/,$(notdir $(ALLINCS_ORIG)))

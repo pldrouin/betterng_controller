@@ -3,16 +3,16 @@
 #include "serial_link.h"
 
 ///enable this to print debug data
-#define DEBUG_PRINT printf
-#define printtime printtime
-//#define DEBUG_PRINT(...)
-//#define printtime(...)
-#define DEBUG_PRINT2 printf
-//#define DEBUG_PRINT2(...)
-#define pthread_mutex_lock(x) {printf("%s: pthread_mutex_lock(%s) at ",__func__, #x); printtime(); pthread_mutex_lock(x);}
-#define pthread_mutex_unlock(x) {printf("%s: pthread_mutex_unlock(%s) at ",__func__, #x); printtime(); pthread_mutex_unlock(x);}
-#define pthread_cond_signal(x) {printf("%s: pthread_cond_signal(%s) at ",__func__, #x); printtime(); pthread_cond_signal(x);}
-#define pthread_cond_wait(x, xl) {printf("%s: pthread_cond_wait(%s, %s) at ",__func__, #x, #xl); printtime(); pthread_cond_wait(x, xl);}
+//#define DEBUG_PRINT printf
+//#define printtime printtime
+#define DEBUG_PRINT(...)
+#define printtime(...)
+//#define DEBUG_PRINT2 printf
+#define DEBUG_PRINT2(...)
+//#define pthread_mutex_lock(x) {printf("%s: pthread_mutex_lock(%s) at ",__func__, #x); printtime(); pthread_mutex_lock(x);}
+//#define pthread_mutex_unlock(x) {printf("%s: pthread_mutex_unlock(%s) at ",__func__, #x); printtime(); pthread_mutex_unlock(x);}
+//#define pthread_cond_signal(x) {printf("%s: pthread_cond_signal(%s) at ",__func__, #x); printtime(); pthread_cond_signal(x);}
+//#define pthread_cond_wait(x, xl) {printf("%s: pthread_cond_wait(%s, %s) at ",__func__, #x, #xl); printtime(); pthread_cond_wait(x, xl);}
 
 const uint8_t input_cmd_nbytes[] = {
   0, // PING 0
@@ -260,8 +260,8 @@ const uint8_t input_cmd_nbytes[] = {
   0, //242
   0, //243
   0, //244
-  0, //245
-  2, // GET_FAN_RPM_CMD_RESP 246
+  2, // GET_FAN_RPM_CMD_RESP 245
+  2, // GET_FAN_OFF_LEVEL_CMD_RESP 246
   2, // GET_FAN_VOLTAGE_CMD_RESP 247
   2, // GET_FAN_VOLTAGE_TARGET_CMD_RESP 248
   0, //249

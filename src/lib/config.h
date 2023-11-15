@@ -35,6 +35,7 @@ int config_reset(void);
 })
 
 int config_get_fan_rpm(void);
+int config_get_fan_off_level(void);
 int config_get_fan_voltage(void);
 int config_get_fan_voltage_target(void);
 int config_fan_adc_calibration(void);
@@ -43,5 +44,7 @@ int config_get_fan_output(void);
 int config_set_fan_output(void);
 int config_get_fan_voltage_response(void);
 int config_set_fan_voltage_response(void);
+
+int config_calibrate_fan_voltage_response(void);
 
 #endif
