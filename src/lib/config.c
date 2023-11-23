@@ -85,6 +85,8 @@ void config_ht_populate()
   HT_SET_FUNC(switch_fan_control);
   HT_SET_FUNC(get_fan_output);
   HT_SET_FUNC(set_fan_output);
+  HT_SET_FUNC(get_fan_duty_cycle_response);
+  HT_SET_FUNC(set_fan_duty_cycle_response);
   HT_SET_FUNC(get_fan_voltage_response);
   HT_SET_FUNC(set_fan_voltage_response);
   HT_SET_FUNC(calibrate_fan_voltage_response);
@@ -104,8 +106,11 @@ int config_help(void)
   printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/manual\n"); 
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
+  printf(BSTR "get_fan_duty_cycle_response" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_duty_cycle_response" UBSTR " fan_id dc_no_out ddcdout\n"); 
   printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout\n"); 
+  printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id min_duty_cycle\n"); 
   printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id min_voltage\n"); 
   return 0;
 }
@@ -276,14 +281,14 @@ int config_get_fan_rpm(void)
 {
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
-  uint16_t rpm;
+  int16_t rpm;
   int ret=send_receive_get_fan_rpm_cmd(id, &rpm);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Get fan RPM failed!\n",__func__);
     return ret;
   }
-  printf("%u\n", rpm);
+  printf("%i\n", rpm);
   return 0;
 }
 
@@ -412,6 +417,53 @@ int config_set_fan_output(void)
   return 0;
 }
 
+int config_get_fan_duty_cycle_response(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint16_t dcnoout;
+  int16_t ddcdout;
+  int16_t d2dcdout2;
+
+  int ret=send_receive_get_fan_duty_cycle_response_cmd(id, &dcnoout, &ddcdout, &d2dcdout2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan duty cycle response failed!\n",__func__);
+    return ret;
+  }
+  printf("dc_no_out: %u /255\n",dcnoout);
+  printf("ddcdout: %i /255 at max output\n",ddcdout);
+  printf("d2dcdout2: %u /255 mV at max output^2\n",d2dcdout2);
+  return 0;
+}
+
+int config_set_fan_duty_cycle_response(void)
+{
+  uint8_t id;
+  uint16_t dcnoout;
+  int16_t ddcdout;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan dc_no_out value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu16, &dcnoout);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan ddcdout value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNi16, &ddcdout);
+  int ret=send_receive_set_fan_duty_cycle_response_cmd(id, dcnoout, ddcdout);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan duty cycle response failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
 int config_get_fan_voltage_response(void)
 {
   uint8_t id;
@@ -474,6 +526,26 @@ int config_calibrate_fan_voltage_response(void)
 
   if(ret) {
     fprintf(stderr,"%s: Error: Calibrate fan voltage response failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_calibrate_fan_duty_cycle_response(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint8_t min_duty_cycle;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan min_duty_cycle value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &min_duty_cycle);
+  int ret=calibrate_fan_duty_cycle_response_cmd(id, min_duty_cycle);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Calibrate fan duty cycle response failed!\n",__func__);
     return ret;
   }
   return 0;

@@ -1,13 +1,13 @@
 #include "controller_cmd.h"
 
-int send_receive_get_fan_rpm_cmd(const uint8_t id, uint16_t* const rpm)
+int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
 {
   CHECK_FAN_ID(id);
   struct req_resp rr={{GET_FAN_RPM_CMD_REQ_ID, {id}, 1},{GET_FAN_RPM_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
-  *rpm=be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *rpm=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
   return 0;
 }
 
@@ -88,6 +88,30 @@ int send_receive_set_fan_output_cmd(const uint8_t id, const uint8_t output)
   return 0;
 }
 
+int send_receive_get_fan_duty_cycle_response_cmd(const uint8_t id, uint16_t* const dc_no_out, int16_t* const ddcdout, int16_t* const d2dcdout2)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_DUTY_CYCLE_RESPONSE_CMD_REQ_ID, {id}, 1},{GET_FAN_DUTY_CYCLE_RESPONSE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *dc_no_out=be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *ddcdout=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[2]);
+  *d2dcdout2=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[4]);
+  return 0;
+}
+
+int send_receive_set_fan_duty_cycle_response_cmd(const uint8_t id, const uint16_t dc_no_out, const int16_t ddcdout)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{SET_FAN_DUTY_CYCLE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(dc_no_out>>8), (uint8_t)dc_no_out, (uint8_t)(ddcdout>>8), (uint8_t)ddcdout}, 5},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
 int send_receive_get_fan_voltage_response_cmd(const uint8_t id, uint16_t* const v_no_out, int16_t* const dvdout, int16_t* const d2vdout2)
 {
   CHECK_FAN_ID(id);
@@ -101,10 +125,10 @@ int send_receive_get_fan_voltage_response_cmd(const uint8_t id, uint16_t* const 
   return 0;
 }
 
-int send_receive_set_fan_voltage_response_cmd(const uint8_t id, const uint16_t vnoout, const int16_t dvdout)
+int send_receive_set_fan_voltage_response_cmd(const uint8_t id, const uint16_t v_no_out, const int16_t dvdout)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(vnoout>>8), (uint8_t)vnoout, (uint8_t)(dvdout>>8), (uint8_t)dvdout}, 5},{ACK_CMD_ID}};
+  struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(v_no_out>>8), (uint8_t)v_no_out, (uint8_t)(dvdout>>8), (uint8_t)dvdout}, 5},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -131,8 +155,8 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
     return ret;
   }
 
-  //Turn fan to max voltage
-  printf("Turning fan %u to max voltage...\n",id);
+  //Turn fan to max output
+  printf("Turning fan %u to max output...\n",id);
   ret=send_receive_set_fan_output_cmd(id, UINT8_MAX);
 
   if(ret) {
@@ -140,9 +164,9 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
     goto resume_fan_output;
   }
 
-  //Switch fan to voltage mode
-  printf("Switching fan %u to voltage mode...\n",id);
-  ret=send_receive_switch_fan_control_cmd(id, FAN_VOLTAGE_MODE);
+  //Switch fan to PWM mode as it is the only way to reach the maximum voltage
+  printf("Switching fan %u to PWM mode...\n",id);
+  ret=send_receive_switch_fan_control_cmd(id, FAN_PWM_MODE);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Switch fan %u control mode failed!\n",__func__,id);
@@ -178,7 +202,16 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
     goto resume_fan_output;
   }
 
-  //Turn fan to low voltage
+  //Switch fan to voltage mode
+  printf("Switching fan %u to voltage mode...\n",id);
+  ret=send_receive_switch_fan_control_cmd(id, FAN_VOLTAGE_MODE);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Switch fan %u control mode failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  //Turn fan to mid voltage
   printf("Turning fan %u to mid voltage...\n",id);
   uint8_t output=round(UINT8_MAX*0.5*((double)min_voltage/FAN_MAX_VOLTAGE_SCALE+1));
   const double mid_voltage = (double)((int16_t)(off_level * ((uint16_t)(output * FAN_MAX_VOLTAGE_SCALE/UINT8_MAX)) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / off_level;
@@ -260,10 +293,142 @@ resume_fan_output:
   return ret;
 }
 
+int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_duty_cycle)
+{
+  CHECK_FAN_ID(id);
+  uint8_t init_output;
+
+  //Get initial fan output
+  printf("Get initial fan %u output...\n",id);
+  int ret=send_receive_get_fan_output_cmd(id, &init_output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan %u output failed!\n",__func__,id);
+    return ret;
+  }
+
+  //Turn fan to max output
+  printf("Turning fan %u to max output...\n",id);
+  ret=send_receive_set_fan_output_cmd(id, UINT8_MAX);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  //Switch fan to PWM mode as it is the only way to reach the maximum voltage
+  printf("Switching fan %u to PWM mode...\n",id);
+  ret=send_receive_switch_fan_control_cmd(id, FAN_PWM_MODE);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Switch fan %u control mode failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  //Change fan calibration to simple proportional response
+  printf("Changing fan %u response to simple proportional response...\n",id);
+  ret=send_receive_set_fan_duty_cycle_response_cmd(id, 0, UINT8_MAX);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan %u duty cycle response failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  double max_rpm;
+  //Get RPM reading at max voltage;
+  //sleep(10);
+  ret=_get_stable_fan_rpm(id, RPM_READING_N_OSCILLATIONS, &max_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan %u average RPM measurement failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  //Turn fan to mid output
+  printf("Turning fan %u to mid output...\n",id);
+  uint8_t output=round(UINT8_MAX*0.5*((double)min_duty_cycle/UINT8_MAX+1));
+  const double mid_duty_cycle = output;
+  ret=send_receive_set_fan_output_cmd(id, output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+  double mid_rpm;
+  //Get RPM reading at mid voltage;
+  //sleep(10);
+  ret=_get_stable_fan_rpm(id, RPM_READING_N_OSCILLATIONS, &mid_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan %u average RPM measurement failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  //Turn fan to low output
+  printf("Turning fan %u to low output...\n",id);
+  const double low_duty_cycle = min_duty_cycle;
+  ret=send_receive_set_fan_output_cmd(id, min_duty_cycle);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+  double low_rpm;
+  //Get RPM reading at low voltage;
+  //sleep(10);
+  ret=_get_stable_fan_rpm(id, RPM_READING_N_OSCILLATIONS, &low_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan %u average RPM measurement failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+  const double mid_output = mid_rpm/max_rpm * UINT8_MAX;
+  const double low_output = low_rpm/max_rpm * UINT8_MAX;
+  printf("mid_output is %f, low_output is %f\n",mid_output, low_output);
+  printf("mid_duty_cycle is %f, low_duty_cycle is %f\n",mid_duty_cycle, low_duty_cycle);
+
+  const double mid_a = ((uint16_t)UINT8_MAX)*UINT8_MAX-mid_output*mid_output;
+  const double mid_b = mid_output*(UINT8_MAX-mid_output);
+  const double mid_c = mid_duty_cycle*((uint16_t)UINT8_MAX)*UINT8_MAX - (double)UINT8_MAX*mid_output*mid_output;
+  const double low_a = ((uint16_t)UINT8_MAX)*UINT8_MAX-low_output*low_output;
+  const double low_b = low_output*(UINT8_MAX-low_output);
+  const double low_c = low_duty_cycle*((uint16_t)UINT8_MAX)*UINT8_MAX - (double)UINT8_MAX*low_output*low_output;
+  //printf("Matrix is\n%f\t%f\n%f\t%f\n",mid_a,mid_b,low_a,low_b);
+
+  const double det=mid_a*low_b-mid_b*low_a;
+  const double ddcnoout = (low_b*mid_c-mid_b*low_c)*UINT8_MAX/det;
+  const double dddcdout = (-low_a*mid_c+mid_a*low_c)*UINT8_MAX/det;
+  const uint16_t dcnoout = round(ddcnoout);
+  const int16_t ddcdout = round(dddcdout);
+  //printf("Inverse matrix is\n%f\t%f\n%f\t%f\n",low_b/det,-mid_b/det,-low_a/det,mid_a/det);
+  printf("dcnoout is %f /255, ddcdout is %f /255, d2dcdout2 is %f /255\n",ddcnoout,dddcdout,UINT8_MAX*UINT8_MAX-ddcnoout-dddcdout);
+  //printf("%f vs %f\n",mid_a*ddcnoout+mid_b*dddcdout,mid_c);
+  //printf("%f vs %f\n",low_a*ddcnoout+low_b*dddcdout,low_c);
+  
+  //Update fan duty cycle response
+  printf("Updating fan %u duty cycle response...\n",id);
+  ret=send_receive_set_fan_duty_cycle_response_cmd(id, dcnoout, ddcdout);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan %u duty cycle response failed!\n",__func__,id);
+    goto resume_fan_output;
+  }
+
+resume_fan_output:
+  printf("Resume fan %u output...\n",id);
+  ret=send_receive_set_fan_output_cmd(id, init_output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
+  }
+  return ret;
+}
+
 int _get_stable_fan_rpm(const uint8_t id, const uint16_t noscillations, double* const average_rpm)
 {
   uint16_t o=0;
-  uint16_t prev_rpm=0, cur_rpm;
+  int16_t prev_rpm=0, cur_rpm;
   int ret=_get_fan_rpm(id, prev_rpm, &prev_rpm);
 
   if(ret) {
@@ -364,7 +529,7 @@ int _get_stable_fan_rpm(const uint8_t id, const uint16_t noscillations, double* 
   return 0;
 }
 
-int _get_fan_rpm(const uint8_t id, const uint16_t prev_rpm, uint16_t* const rpm)
+int _get_fan_rpm(const uint8_t id, const int16_t prev_rpm, int16_t* const rpm)
 {
   int ret;
 
@@ -376,7 +541,7 @@ int _get_fan_rpm(const uint8_t id, const uint16_t prev_rpm, uint16_t* const rpm)
       return ret;
     }
 
-  } while(*rpm==prev_rpm);
+  } while(*rpm==prev_rpm || *rpm<0);
   return 0;
 }
 
