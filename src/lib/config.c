@@ -90,6 +90,7 @@ void config_ht_populate()
   HT_SET_FUNC(get_fan_voltage_response);
   HT_SET_FUNC(set_fan_voltage_response);
   HT_SET_FUNC(calibrate_fan_voltage_response);
+  HT_SET_FUNC(calibrate_fan_duty_cycle_response);
 }
 
 int config_help(void)
@@ -431,9 +432,9 @@ int config_get_fan_duty_cycle_response(void)
     fprintf(stderr,"%s: Error: Get fan duty cycle response failed!\n",__func__);
     return ret;
   }
-  printf("dc_no_out: %u /255\n",dcnoout);
-  printf("ddcdout: %i /255 at max output\n",ddcdout);
-  printf("d2dcdout2: %u /255 mV at max output^2\n",d2dcdout2);
+  printf("dc_no_out: %u /64\n",dcnoout);
+  printf("ddcdout: %i /64 at max output\n",ddcdout);
+  printf("d2dcdout2: %i /64 mV at max output^2\n",d2dcdout2);
   return 0;
 }
 

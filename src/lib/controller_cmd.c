@@ -327,7 +327,7 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Change fan calibration to simple proportional response
   printf("Changing fan %u response to simple proportional response...\n",id);
-  ret=send_receive_set_fan_duty_cycle_response_cmd(id, 0, UINT8_MAX);
+  ret=send_receive_set_fan_duty_cycle_response_cmd(id, 0, UINT8_MAX*64);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u duty cycle response failed!\n",__func__,id);
@@ -397,14 +397,14 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
   //printf("Matrix is\n%f\t%f\n%f\t%f\n",mid_a,mid_b,low_a,low_b);
 
   const double det=mid_a*low_b-mid_b*low_a;
-  const double ddcnoout = (low_b*mid_c-mid_b*low_c)*UINT8_MAX/det;
-  const double dddcdout = (-low_a*mid_c+mid_a*low_c)*UINT8_MAX/det;
+  const double ddcnoout = (low_b*mid_c-mid_b*low_c)*64/det;
+  const double dddcdout = (-low_a*mid_c+mid_a*low_c)*64/det;
   const uint16_t dcnoout = round(ddcnoout);
   const int16_t ddcdout = round(dddcdout);
   //printf("Inverse matrix is\n%f\t%f\n%f\t%f\n",low_b/det,-mid_b/det,-low_a/det,mid_a/det);
-  printf("dcnoout is %f /255, ddcdout is %f /255, d2dcdout2 is %f /255\n",ddcnoout,dddcdout,UINT8_MAX*UINT8_MAX-ddcnoout-dddcdout);
-  //printf("%f vs %f\n",mid_a*ddcnoout+mid_b*dddcdout,mid_c);
-  //printf("%f vs %f\n",low_a*ddcnoout+low_b*dddcdout,low_c);
+  printf("dcnoout is %f /64, ddcdout is %f /64, d2dcdout2 is %f /64\n",ddcnoout,dddcdout,UINT8_MAX*64-ddcnoout-dddcdout);
+  //printf("%f vs %f\n",(mid_a*ddcnoout+mid_b*dddcdout)/64,mid_c);
+  //printf("%f vs %f\n",(low_a*ddcnoout+low_b*dddcdout)/64,low_c);
   
   //Update fan duty cycle response
   printf("Updating fan %u duty cycle response...\n",id);
@@ -533,7 +533,7 @@ int _get_fan_rpm(const uint8_t id, const int16_t prev_rpm, int16_t* const rpm)
 {
   int ret;
 
-  do {
+  //do {
     ret=send_receive_get_fan_rpm_cmd(id, rpm);
 
     if(ret) {
@@ -541,7 +541,8 @@ int _get_fan_rpm(const uint8_t id, const int16_t prev_rpm, int16_t* const rpm)
       return ret;
     }
 
-  } while(*rpm==prev_rpm || *rpm<0);
+  //} while(*rpm==prev_rpm);
+  *rpm=abs(*rpm);
   return 0;
 }
 

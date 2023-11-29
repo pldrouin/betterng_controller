@@ -48,5 +48,6 @@ int config_get_fan_voltage_response(void);
 int config_set_fan_voltage_response(void);
 
 int config_calibrate_fan_voltage_response(void);
+int config_calibrate_fan_duty_cycle_response(void);
 
 #endif
