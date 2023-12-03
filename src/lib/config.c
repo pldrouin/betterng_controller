@@ -85,12 +85,15 @@ void config_ht_populate()
   HT_SET_FUNC(switch_fan_control);
   HT_SET_FUNC(get_fan_output);
   HT_SET_FUNC(set_fan_output);
+  HT_SET_FUNC(set_fan_output_auto);
   HT_SET_FUNC(get_fan_duty_cycle_response);
   HT_SET_FUNC(set_fan_duty_cycle_response);
   HT_SET_FUNC(get_fan_voltage_response);
   HT_SET_FUNC(set_fan_voltage_response);
   HT_SET_FUNC(calibrate_fan_voltage_response);
   HT_SET_FUNC(calibrate_fan_duty_cycle_response);
+  HT_SET_FUNC(get_fan_mode_transitions);
+  HT_SET_FUNC(set_fan_mode_transitions);
 }
 
 int config_help(void)
@@ -107,12 +110,15 @@ int config_help(void)
   printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/manual\n"); 
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
+  printf(BSTR "set_fan_output_auto" UBSTR " fan_id 0-255\n"); 
   printf(BSTR "get_fan_duty_cycle_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_duty_cycle_response" UBSTR " fan_id dc_no_out ddcdout\n"); 
   printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout\n"); 
   printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id min_duty_cycle\n"); 
   printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id min_voltage\n"); 
+  printf(BSTR "get_fan_mode_transitions" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_mode_transitions" UBSTR " fan_id pwm_to_voltage_output voltage_to_pwm_output\n"); 
   return 0;
 }
 
@@ -418,6 +424,26 @@ int config_set_fan_output(void)
   return 0;
 }
 
+int config_set_fan_output_auto(void)
+{
+  uint8_t id;
+  uint8_t output;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan output value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &output);
+  int ret=send_receive_set_fan_output_auto_cmd(id, output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan output failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
 int config_get_fan_duty_cycle_response(void)
 {
   uint8_t id;
@@ -551,3 +577,49 @@ int config_calibrate_fan_duty_cycle_response(void)
   }
   return 0;
 }
+
+int config_get_fan_mode_transitions(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  uint8_t pwm_to_voltage_output;
+  uint8_t voltage_to_pwm_output;
+
+  int ret=send_receive_get_fan_mode_transitions_cmd(id, &pwm_to_voltage_output, &voltage_to_pwm_output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan mode transitions failed!\n",__func__);
+    return ret;
+  }
+  printf("pwm_to_voltage_output: %u\n",pwm_to_voltage_output);
+  printf("voltage_to_pwm_output: %u\n",voltage_to_pwm_output);
+  return 0;
+}
+
+int config_set_fan_mode_transitions(void)
+{
+  uint8_t id;
+  uint8_t pwm_to_voltage_output;
+  uint8_t voltage_to_pwm_output;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan pwm_to_voltage_output value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &pwm_to_voltage_output);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan voltage_to_pwm_output value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNi8, &voltage_to_pwm_output);
+  int ret=send_receive_set_fan_mode_transitions_cmd(id, pwm_to_voltage_output, voltage_to_pwm_output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan mode transitions failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+

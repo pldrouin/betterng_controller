@@ -88,6 +88,17 @@ int send_receive_set_fan_output_cmd(const uint8_t id, const uint8_t output)
   return 0;
 }
 
+int send_receive_set_fan_output_auto_cmd(const uint8_t id, const uint8_t output)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{SET_FAN_OUTPUT_AUTO_CMD_REQ_ID, {id, output}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
 int send_receive_get_fan_duty_cycle_response_cmd(const uint8_t id, uint16_t* const dc_no_out, int16_t* const ddcdout, int16_t* const d2dcdout2)
 {
   CHECK_FAN_ID(id);
@@ -129,6 +140,29 @@ int send_receive_set_fan_voltage_response_cmd(const uint8_t id, const uint16_t v
 {
   CHECK_FAN_ID(id);
   struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(v_no_out>>8), (uint8_t)v_no_out, (uint8_t)(dvdout>>8), (uint8_t)dvdout}, 5},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_fan_mode_transitions_cmd(const uint8_t id, uint8_t* const pwm_to_voltage_output, uint8_t* const voltage_to_pwm_output)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_MODE_TRANSITIONS_CMD_REQ_ID, {id}, 1},{GET_FAN_MODE_TRANSITIONS_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *pwm_to_voltage_output = rr.resp.bytes[0];
+  *voltage_to_pwm_output = rr.resp.bytes[1];
+  return 0;
+}
+
+int send_receive_set_fan_mode_transitions_cmd(const uint8_t id, const uint8_t pwm_to_voltage_output, const uint8_t voltage_to_pwm_output)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{SET_FAN_MODE_TRANSITIONS_CMD_REQ_ID, {id, pwm_to_voltage_output, voltage_to_pwm_output}, 3},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;

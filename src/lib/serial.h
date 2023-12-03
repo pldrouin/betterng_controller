@@ -18,7 +18,7 @@
 
 #include "utils.h"
 
-#define SERIAL_READ_US_TIMEOUT (100000)
+#define SERIAL_READ_US_TIMEOUT (1000000)
 
 typedef struct
 {

@@ -42,10 +42,13 @@ int config_fan_adc_calibration(void);
 int config_switch_fan_control(void);
 int config_get_fan_output(void);
 int config_set_fan_output(void);
+int config_set_fan_output_auto(void);
 int config_get_fan_duty_cycle_response(void);
 int config_set_fan_duty_cycle_response(void);
 int config_get_fan_voltage_response(void);
 int config_set_fan_voltage_response(void);
+int config_get_fan_mode_transitions(void);
+int config_set_fan_mode_transitions(void);
 
 int config_calibrate_fan_voltage_response(void);
 int config_calibrate_fan_duty_cycle_response(void);
