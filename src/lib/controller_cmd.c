@@ -1,5 +1,239 @@
 #include "controller_cmd.h"
 
+int send_receive_get_lm75a_temp_sensor_list_cmd(uint8_t* const list)
+{
+  struct req_resp rr={{GET_LM75A_TEMP_SENSOR_LIST_CMD_REQ_ID, {}, 0},{GET_LM75A_TEMP_SENSOR_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
+}
+
+int send_receive_add_lm75a_temp_sensor_cmd(const uint8_t id)
+{
+  struct req_resp rr={{ADD_LM75A_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_del_lm75a_temp_sensor_cmd(const uint8_t id)
+{
+  struct req_resp rr={{DEL_LM75A_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_analog_temp_sensor_list_cmd(uint8_t* const list)
+{
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_LIST_CMD_REQ_ID, {}, 0},{GET_ANALOG_TEMP_SENSOR_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
+}
+
+int send_receive_add_analog_temp_sensor_cmd(const uint8_t id)
+{
+  struct req_resp rr={{ADD_ANALOG_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_del_analog_temp_sensor_cmd(const uint8_t id)
+{
+  struct req_resp rr={{DEL_ANALOG_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_soft_temp_sensor_list_cmd(uint8_t* const list)
+{
+  struct req_resp rr={{GET_SOFT_TEMP_SENSOR_LIST_CMD_REQ_ID, {}, 0},{GET_SOFT_TEMP_SENSOR_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
+}
+
+int send_receive_add_soft_temp_sensor_cmd(const uint8_t id)
+{
+  struct req_resp rr={{ADD_SOFT_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_del_soft_temp_sensor_cmd(const uint8_t id)
+{
+  struct req_resp rr={{DEL_SOFT_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_lm75a_sensor_value_cmd(const uint8_t id, int16_t* const value)
+{
+  struct req_resp rr={{GET_LM75A_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_SENSOR_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
+int send_receive_get_analog_sensor_value_cmd(const uint8_t id, int16_t* const value)
+{
+  struct req_resp rr={{GET_ANALOG_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_SENSOR_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
+int send_receive_get_soft_sensor_value_cmd(const uint8_t id, int16_t* const value)
+{
+  struct req_resp rr={{GET_SOFT_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_SOFT_SENSOR_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
+int send_receive_get_lm75a_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2)
+{
+  struct req_resp rr={{GET_LM75A_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_SENSOR_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *a0=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *a1=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[2]);
+  *a2=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[4]);
+  return 0;
+}
+
+int send_receive_get_analog_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2)
+{
+  struct req_resp rr={{GET_ANALOG_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_SENSOR_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *a0=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *a1=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[2]);
+  *a2=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[4]);
+  return 0;
+}
+
+int send_receive_set_lm75a_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2)
+{
+  struct req_resp rr={{SET_LM75A_TEMP_SENSOR_CALIB_CMD_REQ_ID, {id, (uint8_t)(a0>>8), (uint8_t)a0, (uint8_t)(a1>>8), (uint8_t)a1, (uint8_t)(a2>>8), (uint8_t)a2}, 7},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_set_analog_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2)
+{
+  struct req_resp rr={{SET_ANALOG_TEMP_SENSOR_CALIB_CMD_REQ_ID, {id, (uint8_t)(a0>>8), (uint8_t)a0, (uint8_t)(a1>>8), (uint8_t)a1, (uint8_t)(a2>>8), (uint8_t)a2}, 7},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_set_soft_temp_sensor_value_cmd(const uint8_t id, const int16_t value)
+{
+  struct req_resp rr={{SET_SOFT_TEMP_SENSOR_VALUE_CMD_REQ_ID, {id, (uint8_t)(value>>8), (uint8_t)value}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_fan_list_cmd(uint8_t* const list)
+{
+}
+
+int send_receive_add_fan_cmd(const uint8_t id)
+{
+}
+
+int send_receive_del_fan_cmd(const uint8_t id)
+{
+}
+
+int send_receive_get_fan_lm75a_temp_sensor_list_cmd(const uint8_t fan_id, uint8_t* const list)
+{
+}
+
+int send_receive_get_fan_analog_temp_sensor_list_cmd(const uint8_t fan_id, uint8_t* const list)
+{
+}
+
+int send_receive_get_fan_soft_temp_sensor_list_cmd(const uint8_t fan_id, uint8_t* const list)
+{
+}
+
+int send_receive_add_fan_lm75a_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
+{
+}
+
+int send_receive_add_fan_analog_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
+{
+}
+
+int send_receive_add_fan_soft_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
+{
+}
+
+int send_receive_del_fan_lm75a_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
+{
+}
+
+int send_receive_del_fan_analog_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
+{
+}
+
+int send_receive_del_fan_soft_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
+{
+}
+
+int send_receive_add_fan_curve_point_cmd(const uint8_t fan_id, const int8_t temp, const uint8_t output)
+{
+}
+
+int send_receive_del_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index)
+{
+}
+
+int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id)
+{
+}
+
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
 {
   CHECK_FAN_ID(id);

@@ -34,6 +34,48 @@ int config_reset(void);
   sscanf(gGlobals.pbuf, "%" SCNu8, &id);\
 })
 
+#define CONFIG_GET_SENSOR_ID(id) ({\
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {\
+    fprintf(stderr,"%s: Error: Missing sensor ID!\n",__func__);\
+    return -1;\
+  }\
+  sscanf(gGlobals.pbuf, "%" SCNu8, &id);\
+})
+
+int config_get_lm75a_temp_sensor_list(void);
+int config_add_lm75a_temp_sensor(void);
+int config_del_lm75a_temp_sensor(void);
+int config_get_analog_temp_sensor_list(void);
+int config_add_analog_temp_sensor(void);
+int config_del_analog_temp_sensor(void);
+int config_get_soft_temp_sensor_list(void);
+int config_add_soft_temp_sensor(void);
+int config_del_soft_temp_sensor(void);
+int config_get_lm75a_sensor_value(void);
+int config_get_analog_sensor_value(void);
+int config_get_soft_sensor_value(void);
+int config_get_lm75a_temp_sensor_calib(void);
+int config_get_analog_temp_sensor_calib(void);
+int config_set_lm75a_temp_sensor_calib(void);
+int config_set_analog_temp_sensor_calib(void);
+int config_set_soft_temp_sensor_value(void);
+int config_get_fan_list(void);
+
+int config_add_fan(void);
+int config_del_fan(void);
+int config_get_fan_lm75a_temp_sensor_list(void);
+int config_get_fan_analog_temp_sensor_list(void);
+int config_get_fan_soft_temp_sensor_list(void);
+int config_add_fan_lm75a_temp_sensor(void);
+int config_add_fan_analog_temp_sensor(void);
+int config_add_fan_soft_temp_sensor(void);
+int config_del_fan_lm75a_temp_sensor(void);
+int config_del_fan_analog_temp_sensor(void);
+int config_del_fan_soft_temp_sensor(void);
+int config_add_fan_curve_point(void);
+int config_del_fan_curve_point(void);
+int config_get_fan_n_curve_points(void);
+
 int config_get_fan_rpm(void);
 int config_get_fan_off_level(void);
 int config_get_fan_voltage(void);

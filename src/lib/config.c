@@ -77,6 +77,39 @@ void config_ht_populate()
   HT_SET_FUNC(ping);
   HT_SET_FUNC(reset);
 
+  HT_SET_FUNC(get_lm75a_temp_sensor_list);
+  HT_SET_FUNC(add_lm75a_temp_sensor);
+  HT_SET_FUNC(del_lm75a_temp_sensor);
+  HT_SET_FUNC(get_analog_temp_sensor_list);
+  HT_SET_FUNC(add_analog_temp_sensor);
+  HT_SET_FUNC(del_analog_temp_sensor);
+  HT_SET_FUNC(get_soft_temp_sensor_list);
+  HT_SET_FUNC(add_soft_temp_sensor);
+  HT_SET_FUNC(del_soft_temp_sensor);
+  HT_SET_FUNC(get_lm75a_sensor_value);
+  HT_SET_FUNC(get_analog_sensor_value);
+  HT_SET_FUNC(get_soft_sensor_value);
+  HT_SET_FUNC(get_lm75a_temp_sensor_calib);
+  HT_SET_FUNC(get_analog_temp_sensor_calib);
+  HT_SET_FUNC(set_lm75a_temp_sensor_calib);
+  HT_SET_FUNC(set_analog_temp_sensor_calib);
+  HT_SET_FUNC(set_soft_temp_sensor_value);
+
+  HT_SET_FUNC(add_fan);
+  HT_SET_FUNC(del_fan);
+  HT_SET_FUNC(get_fan_lm75a_temp_sensor_list);
+  HT_SET_FUNC(get_fan_analog_temp_sensor_list);
+  HT_SET_FUNC(get_fan_soft_temp_sensor_list);
+  HT_SET_FUNC(add_fan_lm75a_temp_sensor);
+  HT_SET_FUNC(add_fan_analog_temp_sensor);
+  HT_SET_FUNC(add_fan_soft_temp_sensor);
+  HT_SET_FUNC(del_fan_lm75a_temp_sensor);
+  HT_SET_FUNC(del_fan_analog_temp_sensor);
+  HT_SET_FUNC(del_fan_soft_temp_sensor);
+  HT_SET_FUNC(add_fan_curve_point);
+  HT_SET_FUNC(del_fan_curve_point);
+  HT_SET_FUNC(get_fan_n_curve_points);
+
   HT_SET_FUNC(get_fan_rpm);
   HT_SET_FUNC(get_fan_off_level);
   HT_SET_FUNC(get_fan_voltage);
@@ -102,12 +135,43 @@ int config_help(void)
   printf(BSTR "olog" UBSTR " output_log_file\n"); 
   printf(BSTR "elog" UBSTR " error_log_file\n"); 
   printf(BSTR "prompt" UBSTR "\n"); 
+  printf(BSTR "get_lm75a_temp_sensor_list" UBSTR "\n");
+  printf(BSTR "add_lm75a_temp_sensor" UBSTR " id)\n");
+  printf(BSTR "del_lm75a_temp_sensor" UBSTR " id)\n");
+  printf(BSTR "get_analog_temp_sensor_list" UBSTR "\n");
+  printf(BSTR "add_analog_temp_sensor" UBSTR " id\n");
+  printf(BSTR "del_analog_temp_sensor" UBSTR " id\n");
+  printf(BSTR "get_soft_temp_sensor_list" UBSTR " \n");
+  printf(BSTR "add_soft_temp_sensor" UBSTR " id\n");
+  printf(BSTR "del_soft_temp_sensor" UBSTR " id\n");
+  printf(BSTR "inline int16_t get_lm75a_sensor_value" UBSTR " id\n");
+  printf(BSTR "inline int16_t get_analog_sensor_value" UBSTR " id\n");
+  printf(BSTR "inline int16_t get_soft_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_lm75a_temp_sensor_calib" UBSTR " id\n");
+  printf(BSTR "get_analog_temp_sensor_calib" UBSTR " id\n");
+  printf(BSTR "set_lm75a_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
+  printf(BSTR "set_analog_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
+  printf(BSTR "set_soft_temp_sensor_value" UBSTR " id value\n");
+  printf(BSTR "add_fan" UBSTR " id\n");
+  printf(BSTR "del_fan" UBSTR " id\n");
+  printf(BSTR "get_fan_lm75a_temp_sensor_list" UBSTR " fan_id\n");
+  printf(BSTR "get_fan_analog_temp_sensor_list" UBSTR " fan_id\n");
+  printf(BSTR "get_fan_soft_temp_sensor_list" UBSTR " fan_id\n");
+  printf(BSTR "add_fan_lm75a_temp_sensor" UBSTR " fan_id sens_id\n");
+  printf(BSTR "add_fan_analog_temp_sensor" UBSTR " fan_id sens_id\n");
+  printf(BSTR "add_fan_soft_temp_sensor" UBSTR " fan_id sens_id\n");
+  printf(BSTR "del_fan_lm75a_temp_sensor" UBSTR " fan_id sens_id\n");
+  printf(BSTR "del_fan_analog_temp_sensor" UBSTR " fan_id sens_id\n");
+  printf(BSTR "del_fan_soft_temp_sensor" UBSTR " fan_id sens_id\n");
+  printf(BSTR "add_fan_curve_point" UBSTR " fan_id temp output\n");
+  printf(BSTR "del_fan_curve_point" UBSTR " fan_id index\n");
+  printf(BSTR "get_fan_n_curve_points" UBSTR " fan_id\n");
   printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_off_level" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_voltage" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_voltage_target" UBSTR " fan_id\n"); 
   printf(BSTR "fan_adc_calibration" UBSTR " fan_id\n"); 
-  printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/manual\n"); 
+  printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/auto\n"); 
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
   printf(BSTR "set_fan_output_auto" UBSTR " fan_id 0-255\n"); 
@@ -284,6 +348,530 @@ int config_reset(void)
   return ret;
 }
 
+int config_get_lm75a_temp_sensor_list(void)
+{
+  uint8_t list;
+  int ret=send_receive_get_lm75a_temp_sensor_list_cmd(&list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get LM75a temperature sensor list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_add_lm75a_temp_sensor(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int ret=send_receive_add_lm75a_temp_sensor_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add LM75a temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_lm75a_temp_sensor(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int ret=send_receive_del_lm75a_temp_sensor_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add LM75a temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_analog_temp_sensor_list(void)
+{
+  uint8_t list;
+  int ret=send_receive_get_analog_temp_sensor_list_cmd(&list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get analog temperature sensor list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_add_analog_temp_sensor(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int ret=send_receive_add_analog_temp_sensor_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add analog temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_analog_temp_sensor(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int ret=send_receive_del_analog_temp_sensor_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Delete analog temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_soft_temp_sensor_list(void)
+{
+  uint8_t list;
+  int ret=send_receive_get_soft_temp_sensor_list_cmd(&list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get soft temperature sensor list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_add_soft_temp_sensor(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int ret=send_receive_add_soft_temp_sensor_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add soft temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_soft_temp_sensor(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int ret=send_receive_del_soft_temp_sensor_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add soft temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_lm75a_sensor_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t value;
+  int ret=send_receive_get_lm75a_sensor_value_cmd(id, &value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get LM75a temperature sensor value failed!\n",__func__);
+    return ret;
+  }
+  printf("%f V\n", value/256.);
+  return 0;
+}
+
+int config_get_analog_sensor_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t value;
+  int ret=send_receive_get_analog_sensor_value_cmd(id, &value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get analog temperature sensor value failed!\n",__func__);
+    return ret;
+  }
+  printf("%f V\n", value/256.);
+  return 0;
+}
+
+int config_get_soft_sensor_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t value;
+  int ret=send_receive_get_soft_sensor_value_cmd(id, &value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get soft temperature sensor value failed!\n",__func__);
+    return ret;
+  }
+  printf("%f V\n", value/256.);
+  return 0;
+}
+
+int config_get_lm75a_temp_sensor_calib(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t a0, a1, a2;
+  int ret=send_receive_get_lm75a_temp_sensor_calib_cmd(id, &a0, &a1, &a2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get LM75a temperature sensor calibration failed!\n",__func__);
+    return ret;
+  }
+  printf("a0 = %" SCNi16 " C\n", a0);
+  printf("a1 = %" SCNi16 " * 2e-14 C\n", a1);
+  printf("a2 = %" SCNi16 " * 2e-28 C\n", a2);
+  return 0;
+}
+
+int config_get_analog_temp_sensor_calib(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t a0, a1, a2;
+  int ret=send_receive_get_analog_temp_sensor_calib_cmd(id, &a0, &a1, &a2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get analog temperature sensor calibration failed!\n",__func__);
+    return ret;
+  }
+  printf("a0 = %" SCNi16 " C\n", a0);
+  printf("a1 = %" SCNi16 " * 2e-14 C\n", a1);
+  printf("a2 = %" SCNi16 " * 2e-28 C\n", a2);
+  return 0;
+}
+
+int config_set_lm75a_temp_sensor_calib(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t a0, a1, a2;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing a0 parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &a0);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing a1 parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &a1);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing a2 parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &a2);
+  int ret=send_receive_set_lm75a_temp_sensor_calib_cmd(id, a0, a1, a2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set LM75a temperature sensor calibration failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_set_analog_temp_sensor_calib(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t a0, a1, a2;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing a0 parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &a0);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing a1 parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &a1);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing a2 parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &a2);
+  int ret=send_receive_set_analog_temp_sensor_calib_cmd(id, a0, a1, a2);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set analog temperature sensor calibration failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_set_soft_temp_sensor_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t value;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing value parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &value);
+
+  int ret=send_receive_set_soft_temp_sensor_value_cmd(id, value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set soft temperature sensor value failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_list(void)
+{
+  uint8_t list;
+  int ret=send_receive_get_fan_list_cmd(&list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_add_fan(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int ret=send_receive_add_fan_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add fan failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_fan(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int ret=send_receive_del_fan_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Delete fan failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_lm75a_temp_sensor_list(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  uint8_t list;
+  int ret=send_receive_get_fan_lm75a_temp_sensor_list_cmd(fan_id, &list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan LM75a temperature sensor list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_get_fan_analog_temp_sensor_list(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  uint8_t list;
+  int ret=send_receive_get_fan_analog_temp_sensor_list_cmd(fan_id, &list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan analog temperature sensor list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_get_fan_soft_temp_sensor_list(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  uint8_t list;
+  int ret=send_receive_get_fan_soft_temp_sensor_list_cmd(fan_id, &list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan soft temperature sensor list failed!\n",__func__);
+    return ret;
+  }
+  int i;
+  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
+  printf("\n");
+  return 0;
+}
+
+int config_add_fan_lm75a_temp_sensor(void)
+{
+  uint8_t fan_id, sens_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  CONFIG_GET_SENSOR_ID(sens_id);
+  int ret=send_receive_add_fan_lm75a_temp_sensor_cmd(fan_id, sens_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add fan LM75a temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_add_fan_analog_temp_sensor(void)
+{
+  uint8_t fan_id, sens_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  CONFIG_GET_SENSOR_ID(sens_id);
+  int ret=send_receive_add_fan_analog_temp_sensor_cmd(fan_id, sens_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add fan analog temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_add_fan_soft_temp_sensor(void)
+{
+  uint8_t fan_id, sens_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  CONFIG_GET_SENSOR_ID(sens_id);
+  int ret=send_receive_add_fan_soft_temp_sensor_cmd(fan_id, sens_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add fan soft temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_fan_lm75a_temp_sensor(void)
+{
+  uint8_t fan_id, sens_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  CONFIG_GET_SENSOR_ID(sens_id);
+  int ret=send_receive_del_fan_lm75a_temp_sensor_cmd(fan_id, sens_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Delete fan LM75a temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_fan_analog_temp_sensor(void)
+{
+  uint8_t fan_id, sens_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  CONFIG_GET_SENSOR_ID(sens_id);
+  int ret=send_receive_del_fan_analog_temp_sensor_cmd(fan_id, sens_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Delete fan analog temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_fan_soft_temp_sensor(void)
+{
+  uint8_t fan_id, sens_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  CONFIG_GET_SENSOR_ID(sens_id);
+  int ret=send_receive_del_fan_soft_temp_sensor_cmd(fan_id, sens_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Delete fan soft temperature sensor failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_add_fan_curve_point(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  int8_t temp;
+  
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing temperature parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi8, &temp);
+  uint8_t output;
+  
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing output parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNu8, &output);
+  int ret=send_receive_add_fan_curve_point_cmd(fan_id, temp, output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Add fan curve point failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_del_fan_curve_point(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  uint8_t index;
+  
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan curve point index parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNu8, &index);
+  int ret=send_receive_del_fan_curve_point_cmd(fan_id, index);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Delete fan curve point failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_n_curve_points(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  int ret=send_receive_get_fan_n_curve_points_cmd(fan_id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan number of curve points failed!\n",__func__);
+    return ret;
+  }
+  return 0;
+}
+
+
 int config_get_fan_rpm(void)
 {
   uint8_t id;
@@ -373,7 +961,7 @@ int config_switch_fan_control(void)
 
   else if(!argsdiffer(gGlobals.pbuf, "pwm")) mode=FAN_PWM_MODE;
 
-  else if(!argsdiffer(gGlobals.pbuf, "manual")) mode=FAN_MANUAL_MODE;
+  else if(!argsdiffer(gGlobals.pbuf, "auto")) mode=FAN_AUTO_MODE;
 
   else {
     fprintf(stderr, "%s: Error: Fan control mode '%s' is invalid!\n", __func__, gGlobals.pbuf);
