@@ -136,8 +136,8 @@ int config_help(void)
   printf(BSTR "elog" UBSTR " error_log_file\n"); 
   printf(BSTR "prompt" UBSTR "\n"); 
   printf(BSTR "get_lm75a_temp_sensor_list" UBSTR "\n");
-  printf(BSTR "add_lm75a_temp_sensor" UBSTR " id)\n");
-  printf(BSTR "del_lm75a_temp_sensor" UBSTR " id)\n");
+  printf(BSTR "add_lm75a_temp_sensor" UBSTR " id\n");
+  printf(BSTR "del_lm75a_temp_sensor" UBSTR " id\n");
   printf(BSTR "get_analog_temp_sensor_list" UBSTR "\n");
   printf(BSTR "add_analog_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_analog_temp_sensor" UBSTR " id\n");
@@ -336,7 +336,7 @@ int config_ping(void)
 {
   int ret=send_receive_ping_cmd();
 
-  if(ret) fprintf(stderr,"%s: Error: Ping failed!\n",__func__);
+  if(ret) fprintf(stderr,"%s: Error: Ping failed with error %i!\n",__func__, ret);
   return ret;
 }
 
@@ -344,7 +344,7 @@ int config_reset(void)
 {
   int ret=send_receive_reset_cmd();
 
-  if(ret) fprintf(stderr,"%s: Error: Reset failed!\n",__func__);
+  if(ret) fprintf(stderr,"%s: Error: Reset failed with error %i!\n",__func__, ret);
   return ret;
 }
 
@@ -354,7 +354,7 @@ int config_get_lm75a_temp_sensor_list(void)
   int ret=send_receive_get_lm75a_temp_sensor_list_cmd(&list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get LM75a temperature sensor list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get LM75a temperature sensor list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -370,7 +370,7 @@ int config_add_lm75a_temp_sensor(void)
   int ret=send_receive_add_lm75a_temp_sensor_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add LM75a temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add LM75a temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -383,7 +383,7 @@ int config_del_lm75a_temp_sensor(void)
   int ret=send_receive_del_lm75a_temp_sensor_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add LM75a temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add LM75a temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -395,7 +395,7 @@ int config_get_analog_temp_sensor_list(void)
   int ret=send_receive_get_analog_temp_sensor_list_cmd(&list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get analog temperature sensor list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get analog temperature sensor list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -411,7 +411,7 @@ int config_add_analog_temp_sensor(void)
   int ret=send_receive_add_analog_temp_sensor_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add analog temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add analog temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -424,7 +424,7 @@ int config_del_analog_temp_sensor(void)
   int ret=send_receive_del_analog_temp_sensor_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Delete analog temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Delete analog temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -436,7 +436,7 @@ int config_get_soft_temp_sensor_list(void)
   int ret=send_receive_get_soft_temp_sensor_list_cmd(&list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get soft temperature sensor list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get soft temperature sensor list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -452,7 +452,7 @@ int config_add_soft_temp_sensor(void)
   int ret=send_receive_add_soft_temp_sensor_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add soft temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add soft temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -465,7 +465,7 @@ int config_del_soft_temp_sensor(void)
   int ret=send_receive_del_soft_temp_sensor_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add soft temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add soft temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -479,7 +479,7 @@ int config_get_lm75a_sensor_value(void)
   int ret=send_receive_get_lm75a_sensor_value_cmd(id, &value);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get LM75a temperature sensor value failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get LM75a temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%f V\n", value/256.);
@@ -494,7 +494,7 @@ int config_get_analog_sensor_value(void)
   int ret=send_receive_get_analog_sensor_value_cmd(id, &value);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get analog temperature sensor value failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get analog temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%f V\n", value/256.);
@@ -509,7 +509,7 @@ int config_get_soft_sensor_value(void)
   int ret=send_receive_get_soft_sensor_value_cmd(id, &value);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get soft temperature sensor value failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get soft temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%f V\n", value/256.);
@@ -524,7 +524,7 @@ int config_get_lm75a_temp_sensor_calib(void)
   int ret=send_receive_get_lm75a_temp_sensor_calib_cmd(id, &a0, &a1, &a2);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get LM75a temperature sensor calibration failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get LM75a temperature sensor calibration failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("a0 = %" SCNi16 " C\n", a0);
@@ -541,7 +541,7 @@ int config_get_analog_temp_sensor_calib(void)
   int ret=send_receive_get_analog_temp_sensor_calib_cmd(id, &a0, &a1, &a2);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get analog temperature sensor calibration failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get analog temperature sensor calibration failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("a0 = %" SCNi16 " C\n", a0);
@@ -576,7 +576,7 @@ int config_set_lm75a_temp_sensor_calib(void)
   int ret=send_receive_set_lm75a_temp_sensor_calib_cmd(id, a0, a1, a2);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set LM75a temperature sensor calibration failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set LM75a temperature sensor calibration failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -608,7 +608,7 @@ int config_set_analog_temp_sensor_calib(void)
   int ret=send_receive_set_analog_temp_sensor_calib_cmd(id, a0, a1, a2);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set analog temperature sensor calibration failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set analog temperature sensor calibration failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -629,7 +629,7 @@ int config_set_soft_temp_sensor_value(void)
   int ret=send_receive_set_soft_temp_sensor_value_cmd(id, value);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set soft temperature sensor value failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set soft temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -641,7 +641,7 @@ int config_get_fan_list(void)
   int ret=send_receive_get_fan_list_cmd(&list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -657,7 +657,7 @@ int config_add_fan(void)
   int ret=send_receive_add_fan_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add fan failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add fan failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -670,7 +670,7 @@ int config_del_fan(void)
   int ret=send_receive_del_fan_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Delete fan failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Delete fan failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -684,7 +684,7 @@ int config_get_fan_lm75a_temp_sensor_list(void)
   int ret=send_receive_get_fan_lm75a_temp_sensor_list_cmd(fan_id, &list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan LM75a temperature sensor list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan LM75a temperature sensor list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -701,7 +701,7 @@ int config_get_fan_analog_temp_sensor_list(void)
   int ret=send_receive_get_fan_analog_temp_sensor_list_cmd(fan_id, &list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan analog temperature sensor list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan analog temperature sensor list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -718,7 +718,7 @@ int config_get_fan_soft_temp_sensor_list(void)
   int ret=send_receive_get_fan_soft_temp_sensor_list_cmd(fan_id, &list);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan soft temperature sensor list failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan soft temperature sensor list failed with error %i!\n",__func__, ret);
     return ret;
   }
   int i;
@@ -735,7 +735,7 @@ int config_add_fan_lm75a_temp_sensor(void)
   int ret=send_receive_add_fan_lm75a_temp_sensor_cmd(fan_id, sens_id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add fan LM75a temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add fan LM75a temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -749,7 +749,7 @@ int config_add_fan_analog_temp_sensor(void)
   int ret=send_receive_add_fan_analog_temp_sensor_cmd(fan_id, sens_id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add fan analog temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add fan analog temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -763,7 +763,7 @@ int config_add_fan_soft_temp_sensor(void)
   int ret=send_receive_add_fan_soft_temp_sensor_cmd(fan_id, sens_id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add fan soft temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add fan soft temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -777,7 +777,7 @@ int config_del_fan_lm75a_temp_sensor(void)
   int ret=send_receive_del_fan_lm75a_temp_sensor_cmd(fan_id, sens_id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Delete fan LM75a temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Delete fan LM75a temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -791,7 +791,7 @@ int config_del_fan_analog_temp_sensor(void)
   int ret=send_receive_del_fan_analog_temp_sensor_cmd(fan_id, sens_id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Delete fan analog temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Delete fan analog temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -805,7 +805,7 @@ int config_del_fan_soft_temp_sensor(void)
   int ret=send_receive_del_fan_soft_temp_sensor_cmd(fan_id, sens_id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Delete fan soft temperature sensor failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Delete fan soft temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -832,7 +832,7 @@ int config_add_fan_curve_point(void)
   int ret=send_receive_add_fan_curve_point_cmd(fan_id, temp, output);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Add fan curve point failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Add fan curve point failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -852,7 +852,7 @@ int config_del_fan_curve_point(void)
   int ret=send_receive_del_fan_curve_point_cmd(fan_id, index);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Delete fan curve point failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Delete fan curve point failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -862,12 +862,14 @@ int config_get_fan_n_curve_points(void)
 {
   uint8_t fan_id;
   CONFIG_GET_FAN_ID(fan_id);
-  int ret=send_receive_get_fan_n_curve_points_cmd(fan_id);
+  uint8_t ncurvepoints;
+  int ret=send_receive_get_fan_n_curve_points_cmd(fan_id, &ncurvepoints);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan number of curve points failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan number of curve points failed with error %i!\n",__func__, ret);
     return ret;
   }
+  printf("%" SCNu8 "\n",ncurvepoints);
   return 0;
 }
 
@@ -880,7 +882,7 @@ int config_get_fan_rpm(void)
   int ret=send_receive_get_fan_rpm_cmd(id, &rpm);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan RPM failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan RPM failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%i\n", rpm);
@@ -895,7 +897,7 @@ int config_get_fan_off_level(void)
   int ret=send_receive_get_fan_off_level_cmd(id, &off_level);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan off_level failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan off_level failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%i mV\n", off_level);
@@ -910,7 +912,7 @@ int config_get_fan_voltage(void)
   int ret=send_receive_get_fan_voltage_cmd(id, &voltage);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan voltage failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan voltage failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%u mV\n", voltage);
@@ -925,7 +927,7 @@ int config_get_fan_voltage_target(void)
   int ret=send_receive_get_fan_voltage_target_cmd(id, &voltage);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan voltage target failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan voltage target failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%u mV\n", voltage);
@@ -939,7 +941,7 @@ int config_fan_adc_calibration(void)
   int ret=send_receive_fan_adc_calibration_cmd(id);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Fan ADC calibration request failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Fan ADC calibration request failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -970,7 +972,7 @@ int config_switch_fan_control(void)
   int ret=send_receive_switch_fan_control_cmd(id, mode);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Switch fan control mode failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Switch fan control mode failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -985,7 +987,7 @@ int config_get_fan_output(void)
   int ret=send_receive_get_fan_output_cmd(id, &output);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan output failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan output failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("%u\n",output);
@@ -1006,7 +1008,7 @@ int config_set_fan_output(void)
   int ret=send_receive_set_fan_output_cmd(id, output);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set fan output failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set fan output failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -1026,7 +1028,7 @@ int config_set_fan_output_auto(void)
   int ret=send_receive_set_fan_output_auto_cmd(id, output);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set fan output failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set fan output failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -1043,7 +1045,7 @@ int config_get_fan_duty_cycle_response(void)
   int ret=send_receive_get_fan_duty_cycle_response_cmd(id, &dcnoout, &ddcdout, &d2dcdout2);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan duty cycle response failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan duty cycle response failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("dc_no_out: %u /64\n",dcnoout);
@@ -1073,7 +1075,7 @@ int config_set_fan_duty_cycle_response(void)
   int ret=send_receive_set_fan_duty_cycle_response_cmd(id, dcnoout, ddcdout);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set fan duty cycle response failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set fan duty cycle response failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -1090,7 +1092,7 @@ int config_get_fan_voltage_response(void)
   int ret=send_receive_get_fan_voltage_response_cmd(id, &vnoout, &dvdout, &d2vdout2);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan voltage response failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan voltage response failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("v_no_out: %u mV\n",vnoout);
@@ -1120,7 +1122,7 @@ int config_set_fan_voltage_response(void)
   int ret=send_receive_set_fan_voltage_response_cmd(id, vnoout, dvdout);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set fan voltage response failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set fan voltage response failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -1140,7 +1142,7 @@ int config_calibrate_fan_voltage_response(void)
   int ret=calibrate_fan_voltage_response_cmd(id, min_voltage);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Calibrate fan voltage response failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Calibrate fan voltage response failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -1160,7 +1162,7 @@ int config_calibrate_fan_duty_cycle_response(void)
   int ret=calibrate_fan_duty_cycle_response_cmd(id, min_duty_cycle);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Calibrate fan duty cycle response failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Calibrate fan duty cycle response failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -1176,7 +1178,7 @@ int config_get_fan_mode_transitions(void)
   int ret=send_receive_get_fan_mode_transitions_cmd(id, &pwm_to_voltage_output, &voltage_to_pwm_output);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan mode transitions failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Get fan mode transitions failed with error %i!\n",__func__, ret);
     return ret;
   }
   printf("pwm_to_voltage_output: %u\n",pwm_to_voltage_output);
@@ -1205,7 +1207,7 @@ int config_set_fan_mode_transitions(void)
   int ret=send_receive_set_fan_mode_transitions_cmd(id, pwm_to_voltage_output, voltage_to_pwm_output);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set fan mode transitions failed!\n",__func__);
+    fprintf(stderr,"%s: Error: Set fan mode transitions failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;

@@ -176,62 +176,152 @@ int send_receive_set_soft_temp_sensor_value_cmd(const uint8_t id, const int16_t 
 
 int send_receive_get_fan_list_cmd(uint8_t* const list)
 {
+  struct req_resp rr={{GET_FAN_LIST_CMD_REQ_ID, {}, 0},{GET_FAN_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
 }
 
 int send_receive_add_fan_cmd(const uint8_t id)
 {
+  struct req_resp rr={{ADD_FAN_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_del_fan_cmd(const uint8_t id)
 {
+  struct req_resp rr={{DEL_FAN_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_get_fan_lm75a_temp_sensor_list_cmd(const uint8_t fan_id, uint8_t* const list)
 {
+  struct req_resp rr={{GET_FAN_LM75A_TEMP_SENSOR_LIST_CMD_REQ_ID, {fan_id}, 1},{GET_FAN_LM75A_TEMP_SENSOR_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
 }
 
 int send_receive_get_fan_analog_temp_sensor_list_cmd(const uint8_t fan_id, uint8_t* const list)
 {
+  struct req_resp rr={{GET_FAN_ANALOG_TEMP_SENSOR_LIST_CMD_REQ_ID, {fan_id}, 1},{GET_FAN_ANALOG_TEMP_SENSOR_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
 }
 
 int send_receive_get_fan_soft_temp_sensor_list_cmd(const uint8_t fan_id, uint8_t* const list)
 {
+  struct req_resp rr={{GET_FAN_SOFT_TEMP_SENSOR_LIST_CMD_REQ_ID, {fan_id}, 1},{GET_FAN_SOFT_TEMP_SENSOR_LIST_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *list=rr.resp.bytes[0];
+  return 0;
 }
 
 int send_receive_add_fan_lm75a_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
 {
+  struct req_resp rr={{ADD_FAN_LM75A_TEMP_SENSOR_CMD_REQ_ID, {fan_id, sens_id}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_add_fan_analog_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
 {
+  struct req_resp rr={{ADD_FAN_ANALOG_TEMP_SENSOR_CMD_REQ_ID, {fan_id, sens_id}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_add_fan_soft_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
 {
+  struct req_resp rr={{ADD_FAN_SOFT_TEMP_SENSOR_CMD_REQ_ID, {fan_id, sens_id}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_del_fan_lm75a_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
 {
+  struct req_resp rr={{DEL_FAN_LM75A_TEMP_SENSOR_CMD_REQ_ID, {fan_id, sens_id}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_del_fan_analog_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
 {
+  struct req_resp rr={{DEL_FAN_ANALOG_TEMP_SENSOR_CMD_REQ_ID, {fan_id, sens_id}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_del_fan_soft_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id)
 {
+  struct req_resp rr={{DEL_FAN_SOFT_TEMP_SENSOR_CMD_REQ_ID, {fan_id, sens_id}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_add_fan_curve_point_cmd(const uint8_t fan_id, const int8_t temp, const uint8_t output)
 {
+  struct req_resp rr={{ADD_FAN_CURVE_POINT_CMD_REQ_ID, {fan_id, (uint8_t)temp, output}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
 int send_receive_del_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index)
 {
+  struct req_resp rr={{DEL_FAN_CURVE_POINT_CMD_REQ_ID, {fan_id, index}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
 }
 
-int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id)
+int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const ncurvepoints)
 {
+  struct req_resp rr={{GET_FAN_N_CURVE_POINTS_CMD_REQ_ID, {fan_id}, 1},{GET_FAN_N_CURVE_POINTS_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *ncurvepoints=rr.resp.bytes[0];
+  return 0;
 }
 
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)

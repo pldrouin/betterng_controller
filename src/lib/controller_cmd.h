@@ -23,8 +23,8 @@
 
 
 #define CHECK_ACK_REPLY(rr) ({\
-    if(rr.resp.bytes[0] != rr.req.id) return -2;\
-    if(rr.resp.bytes[1] != 0) return -3;\
+    if(rr.resp.bytes[0] != rr.req.id) return -(int)INT8_MAX;\
+    if(rr.resp.bytes[1] != 0) return (int8_t)rr.resp.bytes[1];\
 })
 
 static inline int send_receive_ping_cmd(void){struct req_resp rr={{PING_CMD_ID},{PING_CMD_ID}}; return send_recv_cmd(&gGlobals.sl_dev, &rr);}
@@ -62,7 +62,7 @@ int send_receive_del_fan_analog_temp_sensor_cmd(const uint8_t fan_id, const uint
 int send_receive_del_fan_soft_temp_sensor_cmd(const uint8_t fan_id, const uint8_t sens_id);
 int send_receive_add_fan_curve_point_cmd(const uint8_t fan_id, const int8_t temp, const uint8_t output);
 int send_receive_del_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index);
-int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id);
+int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const ncurvepoints);
 
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
 int send_receive_get_fan_off_level_cmd(const uint8_t id, int16_t* const off_level);
