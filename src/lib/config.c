@@ -95,6 +95,7 @@ void config_ht_populate()
   HT_SET_FUNC(set_analog_temp_sensor_calib);
   HT_SET_FUNC(set_soft_temp_sensor_value);
 
+  HT_SET_FUNC(get_fan_list);
   HT_SET_FUNC(add_fan);
   HT_SET_FUNC(del_fan);
   HT_SET_FUNC(get_fan_lm75a_temp_sensor_list);
@@ -144,14 +145,15 @@ int config_help(void)
   printf(BSTR "get_soft_temp_sensor_list" UBSTR " \n");
   printf(BSTR "add_soft_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_soft_temp_sensor" UBSTR " id\n");
-  printf(BSTR "inline int16_t get_lm75a_sensor_value" UBSTR " id\n");
-  printf(BSTR "inline int16_t get_analog_sensor_value" UBSTR " id\n");
-  printf(BSTR "inline int16_t get_soft_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_lm75a_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_analog_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_soft_sensor_value" UBSTR " id\n");
   printf(BSTR "get_lm75a_temp_sensor_calib" UBSTR " id\n");
   printf(BSTR "get_analog_temp_sensor_calib" UBSTR " id\n");
   printf(BSTR "set_lm75a_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
   printf(BSTR "set_analog_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
   printf(BSTR "set_soft_temp_sensor_value" UBSTR " id value\n");
+  printf(BSTR "get_fan_list" UBSTR "\n");
   printf(BSTR "add_fan" UBSTR " id\n");
   printf(BSTR "del_fan" UBSTR " id\n");
   printf(BSTR "get_fan_lm75a_temp_sensor_list" UBSTR " fan_id\n");
@@ -482,7 +484,7 @@ int config_get_lm75a_sensor_value(void)
     fprintf(stderr,"%s: Error: Get LM75a temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%f V\n", value/256.);
+  printf("%f C\n", value/256.);
   return 0;
 }
 
@@ -497,7 +499,7 @@ int config_get_analog_sensor_value(void)
     fprintf(stderr,"%s: Error: Get analog temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%f V\n", value/256.);
+  printf("%f C\n", value/256.);
   return 0;
 }
 
@@ -512,7 +514,7 @@ int config_get_soft_sensor_value(void)
     fprintf(stderr,"%s: Error: Get soft temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%f V\n", value/256.);
+  printf("%f C\n", value/256.);
   return 0;
 }
 
@@ -528,8 +530,8 @@ int config_get_lm75a_temp_sensor_calib(void)
     return ret;
   }
   printf("a0 = %" SCNi16 " C\n", a0);
-  printf("a1 = %" SCNi16 " * 2e-14 C\n", a1);
-  printf("a2 = %" SCNi16 " * 2e-28 C\n", a2);
+  printf("a1 = %" SCNi16 " / 2^14 C\n", a1);
+  printf("a2 = %" SCNi16 " / 2^28 C\n", a2);
   return 0;
 }
 
@@ -545,8 +547,8 @@ int config_get_analog_temp_sensor_calib(void)
     return ret;
   }
   printf("a0 = %" SCNi16 " C\n", a0);
-  printf("a1 = %" SCNi16 " * 2e-14 C\n", a1);
-  printf("a2 = %" SCNi16 " * 2e-28 C\n", a2);
+  printf("a1 = %" SCNi16 " / 2^14 C\n", a1);
+  printf("a2 = %" SCNi16 " / 2^28 C\n", a2);
   return 0;
 }
 

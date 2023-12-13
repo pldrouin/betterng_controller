@@ -122,7 +122,7 @@ int send_receive_get_soft_sensor_value_cmd(const uint8_t id, int16_t* const valu
 
 int send_receive_get_lm75a_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2)
 {
-  struct req_resp rr={{GET_LM75A_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_SENSOR_VALUE_CMD_RESP_ID}};
+  struct req_resp rr={{GET_LM75A_TEMP_SENSOR_CALIB_CMD_REQ_ID, {id}, 1},{GET_LM75A_TEMP_SENSOR_CALIB_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -134,7 +134,7 @@ int send_receive_get_lm75a_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, 
 
 int send_receive_get_analog_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2)
 {
-  struct req_resp rr={{GET_ANALOG_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_SENSOR_VALUE_CMD_RESP_ID}};
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_CALIB_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_CALIB_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
