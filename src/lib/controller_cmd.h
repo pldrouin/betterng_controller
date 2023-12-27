@@ -32,8 +32,6 @@ static inline int send_receive_reset_cmd(void){struct req_resp rr={{RESET_CMD_ID
 
 static inline int send_receive_eeprom_save_cmd(void){struct req_resp rr={{EEPROM_SAVE_CMD_REQ_ID},{ACK_CMD_ID}}; int ret=send_recv_cmd(&gGlobals.sl_dev, &rr); if(ret) return ret; CHECK_ACK_REPLY(rr); return 0;}
 
-static inline int send_receive_silence_alarm_cmd(void){struct req_resp rr={{SILENCE_ALARM_CMD_REQ_ID},{ACK_CMD_ID}}; int ret=send_recv_cmd(&gGlobals.sl_dev, &rr); if(ret) return ret; CHECK_ACK_REPLY(rr); return 0;}
-
 int send_receive_get_lm75a_temp_sensor_list_cmd(uint8_t* const list);
 int send_receive_add_lm75a_temp_sensor_cmd(const uint8_t id);
 int send_receive_del_lm75a_temp_sensor_cmd(const uint8_t id);

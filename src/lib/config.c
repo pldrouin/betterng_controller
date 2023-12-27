@@ -79,8 +79,6 @@ void config_ht_populate()
 
   HT_SET_FUNC(eeprom_save);
 
-  HT_SET_FUNC(silence_alarm);
-
   HT_SET_FUNC(get_lm75a_temp_sensor_list);
   HT_SET_FUNC(add_lm75a_temp_sensor);
   HT_SET_FUNC(del_lm75a_temp_sensor);
@@ -136,7 +134,6 @@ int config_help(void)
   printf(BSTR "elog" UBSTR " error_log_file\n"); 
   printf(BSTR "prompt" UBSTR "\n"); 
   printf(BSTR "eeprom_save" UBSTR "\n");
-  printf(BSTR "silence_alarm" UBSTR "\n");
   printf(BSTR "get_lm75a_temp_sensor_list" UBSTR "\n");
   printf(BSTR "add_lm75a_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_lm75a_temp_sensor" UBSTR " id\n");
@@ -352,17 +349,6 @@ int config_eeprom_save(void)
 
   if(ret) {
     fprintf(stderr,"%s: Error: EEPROM save failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  return 0;
-}
-
-int config_silence_alarm(void)
-{
-  int ret=send_receive_silence_alarm_cmd();
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Silence alarm failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;

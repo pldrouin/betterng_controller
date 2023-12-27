@@ -44,8 +44,6 @@ int config_reset(void);
 
 int config_eeprom_save(void);
 
-int config_silence_alarm(void);
-
 int config_get_lm75a_temp_sensor_list(void);
 int config_add_lm75a_temp_sensor(void);
 int config_del_lm75a_temp_sensor(void);

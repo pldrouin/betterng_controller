@@ -26,6 +26,7 @@
 #include "globals.h"
 #include "config.h"
 #include "controller_cmd.h"
+#include "controller_default_device_cmd.h"
 
 int main(int nargs, const char* args[]);
 
