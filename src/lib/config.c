@@ -174,8 +174,8 @@ int config_help(void)
   printf(BSTR "set_fan_duty_cycle_response" UBSTR " fan_id dc_no_out ddcdout\n"); 
   printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout\n"); 
-  printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id min_duty_cycle\n"); 
-  printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id min_voltage\n"); 
+  printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id min_duty_cycle intermediate_duty_cycle|0\n"); 
+  printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id min_voltage intermediate_voltage|0\n"); 
   printf(BSTR "get_fan_mode_transitions" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_mode_transitions" UBSTR " fan_id pwm_to_voltage_output voltage_to_pwm_output\n"); 
   return 0;
@@ -1071,14 +1071,20 @@ int config_calibrate_fan_voltage_response(void)
 {
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
-  uint16_t min_voltage;
+  uint16_t min_voltage, intermediate_voltage;
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
     fprintf(stderr,"%s: Error: Missing fan min_voltage value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu16, &min_voltage);
-  int ret=calibrate_fan_voltage_response_cmd(id, min_voltage);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan intermediate_voltage value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu16, &intermediate_voltage);
+  int ret=calibrate_fan_voltage_response_cmd(id, min_voltage, intermediate_voltage);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Calibrate fan voltage response failed with error %i!\n",__func__, ret);
@@ -1091,14 +1097,20 @@ int config_calibrate_fan_duty_cycle_response(void)
 {
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
-  uint8_t min_duty_cycle;
+  uint8_t min_duty_cycle, intermediate_duty_cycle;
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
     fprintf(stderr,"%s: Error: Missing fan min_duty_cycle value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu8, &min_duty_cycle);
-  int ret=calibrate_fan_duty_cycle_response_cmd(id, min_duty_cycle);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan intermediate_duty_cycle value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &intermediate_duty_cycle);
+  int ret=calibrate_fan_duty_cycle_response_cmd(id, min_duty_cycle, intermediate_duty_cycle);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Calibrate fan duty cycle response failed with error %i!\n",__func__, ret);

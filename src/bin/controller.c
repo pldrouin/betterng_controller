@@ -19,13 +19,11 @@ int main(int nargs, const char* args[])
   fprintf(stderr,"Opening '%s'\n",args[1]);
 
   sl_init(&gGlobals.sl_dev);
-  uint32_t sbuf;
-  sscanf(args[2],"%" PRIu32, &sbuf);
 
-  if(sl_start(&gGlobals.sl_dev, args[1], sbuf)<0) return -1;
+  if(sl_start(&gGlobals.sl_dev, args[1], UART_BAUDRATE)<0) return -1;
 
-  args+=3;
-  nargs-=3;
+  args+=2;
+  nargs-=2;
   gGlobals.nargs=nargs;
   gGlobals.args=args;
 

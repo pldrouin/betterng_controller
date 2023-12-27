@@ -78,8 +78,8 @@ int send_receive_set_fan_voltage_response_cmd(const uint8_t id, const uint16_t v
 int send_receive_get_fan_mode_transitions_cmd(const uint8_t id, uint8_t* const pwm_to_voltage_output, uint8_t* const voltage_to_pwm_output);
 int send_receive_set_fan_mode_transitions_cmd(const uint8_t id, const uint8_t pwm_to_voltage_output, const uint8_t voltage_to_pwm_output);
 
-int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_voltage);
-int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_duty_cycle);
+int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_voltage, const uint16_t intermediate_voltage);
+int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_duty_cycle, const uint8_t intermediate_duty_cycle);
 int _get_stable_fan_rpm(const uint8_t id, const uint16_t noscillations, double* const average_rpm);
 int _get_fan_rpm(const uint8_t id, const int16_t prev_rpm, int16_t* const rpm);
 
