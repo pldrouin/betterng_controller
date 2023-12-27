@@ -12,12 +12,14 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+#include <math.h>
+
 #include "utils.h"
 #include "serial.h"
 #include "cmd_common.h"
 
 #define DEFAULT_NUM_TRIALS 16
-#define SL_CMD_NUM_READ_TRIALS (CMD_US_TIMEOUT/SERIAL_READ_US_TIMEOUT)
+#define CMD_TIMEOUT(CMD) ((uint16_t)ceil(((float)CMD ## _CMD_US_TIMEOUT)/SERIAL_READ_US_TIMEOUT))
 
 //#define BUILD_ONE_BYTE_CMD(cmd, ID) ({(cmd)->id=ID; calc_check_one_byte(cmd);})
 //#define BUILD_TWO_BYTES_CMD(cmd, ID, value) ({(cmd)->id=ID; (cmd)->byte1=value; calc_check_two_bytes(cmd);})
@@ -53,6 +55,11 @@ typedef struct
 struct req_resp{
   struct cmd req;
   struct cmd resp;
+};
+
+struct cmd_info{
+  uint16_t timeout;
+  uint8_t resp_nbytes;
 };
 
 void sl_init(sl_device *sl_dev);

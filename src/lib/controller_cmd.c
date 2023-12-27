@@ -60,36 +60,6 @@ int send_receive_del_analog_temp_sensor_cmd(const uint8_t id)
   return 0;
 }
 
-int send_receive_get_soft_temp_sensor_list_cmd(uint8_t* const list)
-{
-  struct req_resp rr={{GET_SOFT_TEMP_SENSOR_LIST_CMD_REQ_ID, {}, 0},{GET_SOFT_TEMP_SENSOR_LIST_CMD_RESP_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  *list=rr.resp.bytes[0];
-  return 0;
-}
-
-int send_receive_add_soft_temp_sensor_cmd(const uint8_t id)
-{
-  struct req_resp rr={{ADD_SOFT_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  CHECK_ACK_REPLY(rr);
-  return 0;
-}
-
-int send_receive_del_soft_temp_sensor_cmd(const uint8_t id)
-{
-  struct req_resp rr={{DEL_SOFT_TEMP_SENSOR_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  CHECK_ACK_REPLY(rr);
-  return 0;
-}
-
 int send_receive_get_lm75a_sensor_value_cmd(const uint8_t id, int16_t* const value)
 {
   struct req_resp rr={{GET_LM75A_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_SENSOR_VALUE_CMD_RESP_ID}};
@@ -335,47 +305,14 @@ int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
   return 0;
 }
 
-int send_receive_get_fan_off_level_cmd(const uint8_t id, int16_t* const off_level)
+int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{GET_FAN_OFF_LEVEL_CMD_REQ_ID, {id}, 1},{GET_FAN_OFF_LEVEL_CMD_RESP_ID}};
+  struct req_resp rr={{GET_FAN_MODE_CMD_REQ_ID, {id}, 1},{GET_FAN_MODE_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
-  *off_level=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
-  return 0;
-}
-
-int send_receive_get_fan_voltage_cmd(const uint8_t id, uint16_t* const voltage)
-{
-  CHECK_FAN_ID(id);
-  struct req_resp rr={{GET_FAN_VOLTAGE_CMD_REQ_ID, {id}, 1},{GET_FAN_VOLTAGE_CMD_RESP_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  *voltage=be16toh(*(uint16_t*)&rr.resp.bytes[0]);
-  return 0;
-}
-
-int send_receive_get_fan_voltage_target_cmd(const uint8_t id, uint16_t* const voltage)
-{
-  CHECK_FAN_ID(id);
-  struct req_resp rr={{GET_FAN_VOLTAGE_TARGET_CMD_REQ_ID, {id}, 1},{GET_FAN_VOLTAGE_TARGET_CMD_RESP_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  *voltage=be16toh(*(uint16_t*)&rr.resp.bytes[0]);
-  return 0;
-}
-
-int send_receive_fan_adc_calibration_cmd(const uint8_t id)
-{
-  CHECK_FAN_ID(id);
-  struct req_resp rr={{FAN_ADC_CALIBRATION_CMD_REQ_ID, {id}, 1},{ACK_CMD_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  CHECK_ACK_REPLY(rr);
+  *mode=rr.resp.bytes[0];
   return 0;
 }
 
@@ -398,6 +335,17 @@ int send_receive_get_fan_output_cmd(const uint8_t id, uint8_t* const output)
 
   if(ret) return ret;
   *output=rr.resp.bytes[0];
+  return 0;
+}
+
+int send_receive_get_fan_adc_value_cmd(const uint8_t id, int16_t* const adc_value)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_ADC_VALUE_CMD_REQ_ID, {id}, 1},{GET_FAN_ADC_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *adc_value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
   return 0;
 }
 
@@ -504,9 +452,24 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
   }
   uint8_t init_output;
 
+  //Check if fan is active
+  printf("Get fan list\n");
+  uint8_t list;
+  int ret=send_receive_get_fan_list_cmd(&list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan list failed!\n",__func__);
+    return ret;
+  }
+
+  if(!(list&(1<<id))) {
+    fprintf(stderr,"%s: Error: Fan %u is not currently active!\n",__func__,id);
+    return -1;
+  }
+
   //Get initial fan output
   printf("Get initial fan %u output...\n",id);
-  int ret=send_receive_get_fan_output_cmd(id, &init_output);
+  ret=send_receive_get_fan_output_cmd(id, &init_output);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Get fan %u output failed!\n",__func__,id);
@@ -533,20 +496,10 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Change fan calibration to simple proportional response
   printf("Changing fan %u voltage response to simple proportional response...\n",id);
-  ret=send_receive_set_fan_voltage_response_cmd(id, 0, FAN_MAX_VOLTAGE_SCALE);
+  ret=send_receive_set_fan_voltage_response_cmd(id, 0, FAN_CORRECTED_MAX_VOLTAGE_SCALE);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u voltage response failed!\n",__func__,id);
-    goto resume_fan_output;
-  }
-
-  //Get fan off level
-  printf("Getting fan %u off level\n",id);
-  int16_t off_level;
-  ret=send_receive_get_fan_off_level_cmd(id, &off_level);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Get fan %u off level failed!\n",__func__,id);
     goto resume_fan_output;
   }
 
@@ -572,7 +525,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
   //Turn fan to mid voltage
   printf("Turning fan %u to mid voltage...\n",id);
   uint8_t output=round(UINT8_MAX*0.5*((double)min_voltage/FAN_MAX_VOLTAGE_SCALE+1));
-  const double mid_voltage = (double)((int16_t)(off_level * ((uint16_t)(output * FAN_MAX_VOLTAGE_SCALE/UINT8_MAX)) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / off_level;
+  const double mid_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)output)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
   ret=send_receive_set_fan_output_cmd(id, output);
 
   if(ret) {
@@ -592,7 +545,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
   //Turn fan to low voltage
   printf("Turning fan %u to low voltage...\n",id);
   output=ceil(UINT8_MAX*(double)min_voltage/FAN_MAX_VOLTAGE_SCALE);
-  const double low_voltage = (double)((int16_t)(off_level * ((uint16_t)(output * FAN_MAX_VOLTAGE_SCALE/UINT8_MAX)) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / off_level;
+  const double low_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)output)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
   ret=send_receive_set_fan_output_cmd(id, output);
 
   if(ret) {
@@ -624,11 +577,11 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   const double det=mid_a*low_b-mid_b*low_a;
   const double dvnoout = (low_b*mid_c-mid_b*low_c)/det;
-  const double ddvdout = (-low_a*mid_c+mid_a*low_c)/det;
+  const double ddvdout = ((-low_a*mid_c+mid_a*low_c)/det)*256./UINT8_MAX;
   const uint16_t vnoout = round(dvnoout);
   const int16_t dvdout = round(ddvdout);
   //printf("Inverse matrix is\n%f\t%f\n%f\t%f\n",low_b/det,-mid_b/det,-low_a/det,mid_a/det);
-  printf("vnoout is %f, dvdout is %f, d2vdout2 is %f\n",dvnoout,ddvdout,FAN_MAX_VOLTAGE_SCALE-dvnoout-ddvdout);
+  printf("vnoout is %f, dvdout is %f, d2vdout2 is %f\n",dvnoout,ddvdout,(FAN_MAX_VOLTAGE_SCALE-dvnoout-(ddvdout*UINT8_MAX)/256.)*65536./65025);
   //printf("%f vs %f\n",mid_a*dvnoout+mid_b*ddvdout,mid_c);
   //printf("%f vs %f\n",low_a*dvnoout+low_b*ddvdout,low_c);
   
@@ -656,9 +609,24 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
   CHECK_FAN_ID(id);
   uint8_t init_output;
 
+  //Check if fan is active
+  printf("Get fan list\n");
+  uint8_t list;
+  int ret=send_receive_get_fan_list_cmd(&list);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan list failed!\n",__func__);
+    return ret;
+  }
+
+  if(!(list&(1<<id))) {
+    fprintf(stderr,"%s: Error: Fan %u is not currently active!\n",__func__,id);
+    return -1;
+  }
+
   //Get initial fan output
   printf("Get initial fan %u output...\n",id);
-  int ret=send_receive_get_fan_output_cmd(id, &init_output);
+  ret=send_receive_get_fan_output_cmd(id, &init_output);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Get fan %u output failed!\n",__func__,id);
@@ -685,7 +653,7 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Change fan calibration to simple proportional response
   printf("Changing fan %u response to simple proportional response...\n",id);
-  ret=send_receive_set_fan_duty_cycle_response_cmd(id, 0, UINT8_MAX*64);
+  ret=send_receive_set_fan_duty_cycle_response_cmd(id, 0, 256*64);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u duty cycle response failed!\n",__func__,id);
@@ -756,11 +724,11 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   const double det=mid_a*low_b-mid_b*low_a;
   const double ddcnoout = (low_b*mid_c-mid_b*low_c)*64/det;
-  const double dddcdout = (-low_a*mid_c+mid_a*low_c)*64/det;
+  const double dddcdout = (-low_a*mid_c+mid_a*low_c)*64/det*256./UINT8_MAX;
   const uint16_t dcnoout = round(ddcnoout);
   const int16_t ddcdout = round(dddcdout);
   //printf("Inverse matrix is\n%f\t%f\n%f\t%f\n",low_b/det,-mid_b/det,-low_a/det,mid_a/det);
-  printf("dcnoout is %f /64, ddcdout is %f /64, d2dcdout2 is %f /64\n",ddcnoout,dddcdout,UINT8_MAX*64-ddcnoout-dddcdout);
+  printf("dcnoout is %f /64, ddcdout is %f /64, d2dcdout2 is %f /64\n",ddcnoout,dddcdout,(UINT8_MAX*64-ddcnoout-(dddcdout*UINT8_MAX)/256.)*65536./65025);
   //printf("%f vs %f\n",(mid_a*ddcnoout+mid_b*dddcdout)/64,mid_c);
   //printf("%f vs %f\n",(low_a*ddcnoout+low_b*dddcdout)/64,low_c);
   

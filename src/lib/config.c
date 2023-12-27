@@ -77,15 +77,16 @@ void config_ht_populate()
   HT_SET_FUNC(ping);
   HT_SET_FUNC(reset);
 
+  HT_SET_FUNC(eeprom_save);
+
+  HT_SET_FUNC(silence_alarm);
+
   HT_SET_FUNC(get_lm75a_temp_sensor_list);
   HT_SET_FUNC(add_lm75a_temp_sensor);
   HT_SET_FUNC(del_lm75a_temp_sensor);
   HT_SET_FUNC(get_analog_temp_sensor_list);
   HT_SET_FUNC(add_analog_temp_sensor);
   HT_SET_FUNC(del_analog_temp_sensor);
-  HT_SET_FUNC(get_soft_temp_sensor_list);
-  HT_SET_FUNC(add_soft_temp_sensor);
-  HT_SET_FUNC(del_soft_temp_sensor);
   HT_SET_FUNC(get_lm75a_sensor_value);
   HT_SET_FUNC(get_analog_sensor_value);
   HT_SET_FUNC(get_soft_sensor_value);
@@ -112,11 +113,9 @@ void config_ht_populate()
   HT_SET_FUNC(get_fan_n_curve_points);
 
   HT_SET_FUNC(get_fan_rpm);
-  HT_SET_FUNC(get_fan_off_level);
-  HT_SET_FUNC(get_fan_voltage);
-  HT_SET_FUNC(get_fan_voltage_target);
-  HT_SET_FUNC(fan_adc_calibration);
+  HT_SET_FUNC(get_fan_mode);
   HT_SET_FUNC(switch_fan_control);
+  HT_SET_FUNC(get_fan_adc_value);
   HT_SET_FUNC(get_fan_output);
   HT_SET_FUNC(set_fan_output);
   HT_SET_FUNC(set_fan_output_auto);
@@ -136,15 +135,14 @@ int config_help(void)
   printf(BSTR "olog" UBSTR " output_log_file\n"); 
   printf(BSTR "elog" UBSTR " error_log_file\n"); 
   printf(BSTR "prompt" UBSTR "\n"); 
+  printf(BSTR "eeprom_save" UBSTR "\n");
+  printf(BSTR "silence_alarm" UBSTR "\n");
   printf(BSTR "get_lm75a_temp_sensor_list" UBSTR "\n");
   printf(BSTR "add_lm75a_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_lm75a_temp_sensor" UBSTR " id\n");
   printf(BSTR "get_analog_temp_sensor_list" UBSTR "\n");
   printf(BSTR "add_analog_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_analog_temp_sensor" UBSTR " id\n");
-  printf(BSTR "get_soft_temp_sensor_list" UBSTR " \n");
-  printf(BSTR "add_soft_temp_sensor" UBSTR " id\n");
-  printf(BSTR "del_soft_temp_sensor" UBSTR " id\n");
   printf(BSTR "get_lm75a_sensor_value" UBSTR " id\n");
   printf(BSTR "get_analog_sensor_value" UBSTR " id\n");
   printf(BSTR "get_soft_sensor_value" UBSTR " id\n");
@@ -169,11 +167,9 @@ int config_help(void)
   printf(BSTR "del_fan_curve_point" UBSTR " fan_id index\n");
   printf(BSTR "get_fan_n_curve_points" UBSTR " fan_id\n");
   printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
-  printf(BSTR "get_fan_off_level" UBSTR " fan_id\n"); 
-  printf(BSTR "get_fan_voltage" UBSTR " fan_id\n"); 
-  printf(BSTR "get_fan_voltage_target" UBSTR " fan_id\n"); 
-  printf(BSTR "fan_adc_calibration" UBSTR " fan_id\n"); 
+  printf(BSTR "get_fan_mode" UBSTR " fan_id\n"); 
   printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/auto\n"); 
+  printf(BSTR "get_fan_adc_value" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
   printf(BSTR "set_fan_output_auto" UBSTR " fan_id 0-255\n"); 
@@ -350,6 +346,28 @@ int config_reset(void)
   return ret;
 }
 
+int config_eeprom_save(void)
+{
+  int ret=send_receive_eeprom_save_cmd();
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: EEPROM save failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_silence_alarm(void)
+{
+  int ret=send_receive_silence_alarm_cmd();
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Silence alarm failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
 int config_get_lm75a_temp_sensor_list(void)
 {
   uint8_t list;
@@ -427,47 +445,6 @@ int config_del_analog_temp_sensor(void)
 
   if(ret) {
     fprintf(stderr,"%s: Error: Delete analog temperature sensor failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  return 0;
-}
-
-int config_get_soft_temp_sensor_list(void)
-{
-  uint8_t list;
-  int ret=send_receive_get_soft_temp_sensor_list_cmd(&list);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Get soft temperature sensor list failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  int i;
-  for(i=7; i>=0; --i) printf("%i",(list>>i)&1);
-  printf("\n");
-  return 0;
-}
-
-int config_add_soft_temp_sensor(void)
-{
-  uint8_t id;
-  CONFIG_GET_SENSOR_ID(id);
-  int ret=send_receive_add_soft_temp_sensor_cmd(id);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Add soft temperature sensor failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  return 0;
-}
-
-int config_del_soft_temp_sensor(void)
-{
-  uint8_t id;
-  CONFIG_GET_SENSOR_ID(id);
-  int ret=send_receive_del_soft_temp_sensor_cmd(id);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Add soft temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -891,61 +868,19 @@ int config_get_fan_rpm(void)
   return 0;
 }
 
-int config_get_fan_off_level(void)
+int config_get_fan_mode(void)
 {
   uint8_t id;
+  uint8_t mode;
   CONFIG_GET_FAN_ID(id);
-  int16_t off_level;
-  int ret=send_receive_get_fan_off_level_cmd(id, &off_level);
+
+  int ret=send_receive_get_fan_mode_cmd(id, &mode);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get fan off_level failed with error %i!\n",__func__, ret);
+    fprintf(stderr,"%s: Error: Get fan mode failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i mV\n", off_level);
-  return 0;
-}
-
-int config_get_fan_voltage(void)
-{
-  uint8_t id;
-  CONFIG_GET_FAN_ID(id);
-  uint16_t voltage;
-  int ret=send_receive_get_fan_voltage_cmd(id, &voltage);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Get fan voltage failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  printf("%u mV\n", voltage);
-  return 0;
-}
-
-int config_get_fan_voltage_target(void)
-{
-  uint8_t id;
-  CONFIG_GET_FAN_ID(id);
-  uint16_t voltage;
-  int ret=send_receive_get_fan_voltage_target_cmd(id, &voltage);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Get fan voltage target failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  printf("%u mV\n", voltage);
-  return 0;
-}
-
-int config_fan_adc_calibration(void)
-{
-  uint8_t id;
-  CONFIG_GET_FAN_ID(id);
-  int ret=send_receive_fan_adc_calibration_cmd(id);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Fan ADC calibration request failed with error %i!\n",__func__, ret);
-    return ret;
-  }
+  printf("%u\n",mode);
   return 0;
 }
 
@@ -965,7 +900,7 @@ int config_switch_fan_control(void)
 
   else if(!argsdiffer(gGlobals.pbuf, "pwm")) mode=FAN_PWM_MODE;
 
-  else if(!argsdiffer(gGlobals.pbuf, "auto")) mode=FAN_AUTO_MODE;
+  else if(!argsdiffer(gGlobals.pbuf, "auto")) mode=FAN_AUTO_FLAG;
 
   else {
     fprintf(stderr, "%s: Error: Fan control mode '%s' is invalid!\n", __func__, gGlobals.pbuf);
@@ -977,6 +912,22 @@ int config_switch_fan_control(void)
     fprintf(stderr,"%s: Error: Switch fan control mode failed with error %i!\n",__func__, ret);
     return ret;
   }
+  return 0;
+}
+
+int config_get_fan_adc_value(void)
+{
+  uint8_t id;
+  int16_t adc_value;
+  CONFIG_GET_FAN_ID(id);
+
+  int ret=send_receive_get_fan_adc_value_cmd(id, &adc_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan adc value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%" SCNi16 "\n",adc_value);
   return 0;
 }
 

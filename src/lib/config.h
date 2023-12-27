@@ -42,15 +42,16 @@ int config_reset(void);
   sscanf(gGlobals.pbuf, "%" SCNu8, &id);\
 })
 
+int config_eeprom_save(void);
+
+int config_silence_alarm(void);
+
 int config_get_lm75a_temp_sensor_list(void);
 int config_add_lm75a_temp_sensor(void);
 int config_del_lm75a_temp_sensor(void);
 int config_get_analog_temp_sensor_list(void);
 int config_add_analog_temp_sensor(void);
 int config_del_analog_temp_sensor(void);
-int config_get_soft_temp_sensor_list(void);
-int config_add_soft_temp_sensor(void);
-int config_del_soft_temp_sensor(void);
 int config_get_lm75a_sensor_value(void);
 int config_get_analog_sensor_value(void);
 int config_get_soft_sensor_value(void);
@@ -77,11 +78,9 @@ int config_del_fan_curve_point(void);
 int config_get_fan_n_curve_points(void);
 
 int config_get_fan_rpm(void);
-int config_get_fan_off_level(void);
-int config_get_fan_voltage(void);
-int config_get_fan_voltage_target(void);
-int config_fan_adc_calibration(void);
+int config_get_fan_mode(void);
 int config_switch_fan_control(void);
+int config_get_fan_adc_value(void);
 int config_get_fan_output(void);
 int config_set_fan_output(void);
 int config_set_fan_output_auto(void);

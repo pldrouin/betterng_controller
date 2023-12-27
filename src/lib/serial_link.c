@@ -14,263 +14,263 @@
 //#define pthread_cond_signal(x) {printf("%s: pthread_cond_signal(%s) at ",__func__, #x); printtime(); pthread_cond_signal(x);}
 //#define pthread_cond_wait(x, xl) {printf("%s: pthread_cond_wait(%s, %s) at ",__func__, #x, #xl); printtime(); pthread_cond_wait(x, xl);}
 
-const uint8_t input_cmd_nbytes[] = {
-  0, // PING 0
-  0, // RESET 1
-  0, //  2
-  0, //  3
-  0, //  4
-  0, //  5
-  0, //  6
-  0, //  7
-  0, //  8
-  0, //  9
-  0, // 10
-  0, // 11
-  0, // 12
-  0, // 13
-  0, // 14
-  0, // 15
-  0, // 16
-  0, // 17
-  0, // 18
-  0, // 19
-  0, // 20
-  0, // 21
-  0, // 22
-  0, // 23
-  0, // 24
-  0, // 25
-  0, // 26
-  0, // 27
-  0, // 28
-  0, // 29
-  0, // 30
-  0, // 31
-  0, // 32
-  0, // 33
-  0, // 34
-  0, // 35
-  0, // 36
-  0, // 37
-  0, // 38
-  0, // 39
-  0, // 40
-  0, // 41
-  0, // 42
-  0, // 43
-  0, // 44
-  0, // 45
-  0, // 46
-  0, // 47
-  0, // 48
-  0, // 49
-  0, // 50
-  0, // 51
-  0, // 52
-  0, // 53
-  0, // 54
-  0, // 55
-  0, // 56
-  0, // 57
-  0, // 58
-  0, // 59
-  0, // 60
-  0, // 61
-  0, // 62
-  0, // 63
-  0, // 64
-  0, // 65
-  0, // 66
-  0, // 67
-  0, // 68
-  0, // 69
-  0, // 70
-  0, // 71
-  0, // 72
-  0, // 73
-  0, // 74
-  0, // 75
-  0, // 76
-  0, // 77
-  0, // 78
-  0, // 79
-  0, // 80
-  0, // 81
-  0, // 82
-  0, // 83
-  0, // 84
-  0, // 85
-  0, // 86
-  0, // 87
-  0, // 88
-  0, // 89
-  0, // 90
-  0, // 91
-  0, // 92
-  0, // 93
-  0, // 94
-  0, // 95
-  0, // 96
-  0, // 97
-  0, // 98
-  0, // 99
-  0, //100
-  0, //101
-  0, //102
-  0, //103
-  0, //104
-  0, //105
-  0, //106
-  0, //107
-  0, //108
-  0, //109
-  0, //110
-  0, //111
-  0, //112
-  0, //113
-  0, //114
-  0, //115
-  0, //116
-  0, //117
-  0, //118
-  0, //119
-  0, //120
-  0, //121
-  0, //122
-  0, //123
-  0, //124
-  0, //125
-  0, //126
-  0, //127
-  0, //128
-  0, //129
-  0, //130
-  0, //131
-  0, //132
-  0, //133
-  0, //134
-  0, //135
-  0, //136
-  0, //137
-  0, //138
-  0, //139
-  0, //140
-  0, //141
-  0, //142
-  0, //143
-  0, //144
-  0, //145
-  0, //146
-  0, //147
-  0, //148
-  0, //149
-  0, //150
-  0, //151
-  0, //152
-  0, //153
-  0, //154
-  0, //155
-  0, //156
-  0, //157
-  0, //158
-  0, //159
-  0, //160
-  0, //161
-  0, //162
-  0, //163
-  0, //164
-  0, //165
-  0, //166
-  0, //167
-  0, //168
-  0, //169
-  0, //170
-  0, //171
-  0, //172
-  0, //173
-  0, //174
-  0, //175
-  0, //176
-  0, //177
-  0, //178
-  0, //179
-  0, //180
-  0, //181
-  0, //182
-  0, //183
-  0, //184
-  0, //185
-  0, //186
-  0, //187
-  0, //188
-  0, //189
-  0, //190
-  0, //191
-  0, //192
-  0, //193
-  0, //194
-  0, //195
-  0, //196
-  0, //197
-  0, //198
-  0, //199
-  0, //200
-  0, //201
-  0, //202
-  0, //203
-  0, //204
-  0, //205
-  0, //206
-  0, //207
-  0, //208
-  1, // GET_LM75A_TEMP_SENSOR_LIST_CMD_RESP_ID 209
-  0, // 210
-  0, // 211
-  1, // GET_ANALOG_TEMP_SENSOR_LIST_CMD_RESP_ID 212
-  0, // 213
-  0, // 214
-  1, // GET_SOFT_TEMP_SENSOR_LIST_CMD_RESP_ID 215
-  2, // GET_LM75A_SENSOR_VALUE_CMD_RESP_ID 216
-  2, // GET_ANALOG_SENSOR_VALUE_CMD_RESP_ID 217
-  2, // GET_SOFT_SENSOR_VALUE_CMD_RESP_ID 218
-  7, // GET_LM75A_TEMP_SENSOR_CALIB_CMD_RESP_ID 219
-  7, // GET_ANALOG_TEMP_SENSOR_CALIB_CMD_RESP_ID 220
-  0, // 221
-  0, // 222
-  0, // 223
-  0, // 224
-  0, // 225
-  1, // GET_FAN_LIST_CMD_RESP_ID 226
-  0, // 227
-  0, // 228
-  0, // 229
-  0, // 230
-  0, // 231
-  0, // 232
-  1, // GET_FAN_LM75A_TEMP_SENSOR_LIST_CMD_RESP_ID 233
-  1, // GET_FAN_ANALOG_TEMP_SENSOR_LIST_CMD_RESP_ID 234
-  1, // GET_FAN_SOFT_TEMP_SENSOR_LIST_CMD_RESP_ID 235
-  0, // 236
-  0, // 237
-  1, // GET_FAN_N_CURVE_POINTS_CMD_RESP_ID 238
-  3, // GET_FAN_CURVE_POINT_CMD_RESP_ID 239
-  2, // GET_FAN_RPM_CMD_RESP 240
-  2, // GET_FAN_OFF_LEVEL_CMD_RESP 241
-  2, // GET_FAN_VOLTAGE_CMD_RESP 242
-  2, // GET_FAN_VOLTAGE_TARGET_CMD_RESP 243
-  0, //244
-  0, //245
-  1, // GET_FAN_OUTPUT_RESPONSE 246
-  0, //247
-  0, //248
-  6, // GET_FAN_DUTY_CYCLE_RESPONSE 249
-  0, //250
-  6, // GET_FAN_VOLTAGE_RESPONSE 251
-  0, //252
-  2, // GET_FAN_MODE_TRANSITIONS 253
-  0, //254
-  2, // ACK 255
+const struct cmd_info cmd_info[] = {
+  {CMD_TIMEOUT(DEFAULT), 0}, // PING 0
+  {CMD_TIMEOUT(DEFAULT), 0}, // RESET 1
+  {CMD_TIMEOUT(EEPROM_SAVE), 0}, // EEPROM_SAVE 2
+  {CMD_TIMEOUT(DEFAULT), 0}, // EEPROM_SAVE 3
+  {CMD_TIMEOUT(DEFAULT), 0}, //  4
+  {CMD_TIMEOUT(DEFAULT), 0}, //  5
+  {CMD_TIMEOUT(DEFAULT), 0}, //  6
+  {CMD_TIMEOUT(DEFAULT), 0}, //  7
+  {CMD_TIMEOUT(DEFAULT), 0}, //  8
+  {CMD_TIMEOUT(DEFAULT), 0}, //  9
+  {CMD_TIMEOUT(DEFAULT), 0}, // 10
+  {CMD_TIMEOUT(DEFAULT), 0}, // 11
+  {CMD_TIMEOUT(DEFAULT), 0}, // 12
+  {CMD_TIMEOUT(DEFAULT), 0}, // 13
+  {CMD_TIMEOUT(DEFAULT), 0}, // 14
+  {CMD_TIMEOUT(DEFAULT), 0}, // 15
+  {CMD_TIMEOUT(DEFAULT), 0}, // 16
+  {CMD_TIMEOUT(DEFAULT), 0}, // 17
+  {CMD_TIMEOUT(DEFAULT), 0}, // 18
+  {CMD_TIMEOUT(DEFAULT), 0}, // 19
+  {CMD_TIMEOUT(DEFAULT), 0}, // 20
+  {CMD_TIMEOUT(DEFAULT), 0}, // 21
+  {CMD_TIMEOUT(DEFAULT), 0}, // 22
+  {CMD_TIMEOUT(DEFAULT), 0}, // 23
+  {CMD_TIMEOUT(DEFAULT), 0}, // 24
+  {CMD_TIMEOUT(DEFAULT), 0}, // 25
+  {CMD_TIMEOUT(DEFAULT), 0}, // 26
+  {CMD_TIMEOUT(DEFAULT), 0}, // 27
+  {CMD_TIMEOUT(DEFAULT), 0}, // 28
+  {CMD_TIMEOUT(DEFAULT), 0}, // 29
+  {CMD_TIMEOUT(DEFAULT), 0}, // 30
+  {CMD_TIMEOUT(DEFAULT), 0}, // 31
+  {CMD_TIMEOUT(DEFAULT), 0}, // 32
+  {CMD_TIMEOUT(DEFAULT), 0}, // 33
+  {CMD_TIMEOUT(DEFAULT), 0}, // 34
+  {CMD_TIMEOUT(DEFAULT), 0}, // 35
+  {CMD_TIMEOUT(DEFAULT), 0}, // 36
+  {CMD_TIMEOUT(DEFAULT), 0}, // 37
+  {CMD_TIMEOUT(DEFAULT), 0}, // 38
+  {CMD_TIMEOUT(DEFAULT), 0}, // 39
+  {CMD_TIMEOUT(DEFAULT), 0}, // 40
+  {CMD_TIMEOUT(DEFAULT), 0}, // 41
+  {CMD_TIMEOUT(DEFAULT), 0}, // 42
+  {CMD_TIMEOUT(DEFAULT), 0}, // 43
+  {CMD_TIMEOUT(DEFAULT), 0}, // 44
+  {CMD_TIMEOUT(DEFAULT), 0}, // 45
+  {CMD_TIMEOUT(DEFAULT), 0}, // 46
+  {CMD_TIMEOUT(DEFAULT), 0}, // 47
+  {CMD_TIMEOUT(DEFAULT), 0}, // 48
+  {CMD_TIMEOUT(DEFAULT), 0}, // 49
+  {CMD_TIMEOUT(DEFAULT), 0}, // 50
+  {CMD_TIMEOUT(DEFAULT), 0}, // 51
+  {CMD_TIMEOUT(DEFAULT), 0}, // 52
+  {CMD_TIMEOUT(DEFAULT), 0}, // 53
+  {CMD_TIMEOUT(DEFAULT), 0}, // 54
+  {CMD_TIMEOUT(DEFAULT), 0}, // 55
+  {CMD_TIMEOUT(DEFAULT), 0}, // 56
+  {CMD_TIMEOUT(DEFAULT), 0}, // 57
+  {CMD_TIMEOUT(DEFAULT), 0}, // 58
+  {CMD_TIMEOUT(DEFAULT), 0}, // 59
+  {CMD_TIMEOUT(DEFAULT), 0}, // 60
+  {CMD_TIMEOUT(DEFAULT), 0}, // 61
+  {CMD_TIMEOUT(DEFAULT), 0}, // 62
+  {CMD_TIMEOUT(DEFAULT), 0}, // 63
+  {CMD_TIMEOUT(DEFAULT), 0}, // 64
+  {CMD_TIMEOUT(DEFAULT), 0}, // 65
+  {CMD_TIMEOUT(DEFAULT), 0}, // 66
+  {CMD_TIMEOUT(DEFAULT), 0}, // 67
+  {CMD_TIMEOUT(DEFAULT), 0}, // 68
+  {CMD_TIMEOUT(DEFAULT), 0}, // 69
+  {CMD_TIMEOUT(DEFAULT), 0}, // 70
+  {CMD_TIMEOUT(DEFAULT), 0}, // 71
+  {CMD_TIMEOUT(DEFAULT), 0}, // 72
+  {CMD_TIMEOUT(DEFAULT), 0}, // 73
+  {CMD_TIMEOUT(DEFAULT), 0}, // 74
+  {CMD_TIMEOUT(DEFAULT), 0}, // 75
+  {CMD_TIMEOUT(DEFAULT), 0}, // 76
+  {CMD_TIMEOUT(DEFAULT), 0}, // 77
+  {CMD_TIMEOUT(DEFAULT), 0}, // 78
+  {CMD_TIMEOUT(DEFAULT), 0}, // 79
+  {CMD_TIMEOUT(DEFAULT), 0}, // 80
+  {CMD_TIMEOUT(DEFAULT), 0}, // 81
+  {CMD_TIMEOUT(DEFAULT), 0}, // 82
+  {CMD_TIMEOUT(DEFAULT), 0}, // 83
+  {CMD_TIMEOUT(DEFAULT), 0}, // 84
+  {CMD_TIMEOUT(DEFAULT), 0}, // 85
+  {CMD_TIMEOUT(DEFAULT), 0}, // 86
+  {CMD_TIMEOUT(DEFAULT), 0}, // 87
+  {CMD_TIMEOUT(DEFAULT), 0}, // 88
+  {CMD_TIMEOUT(DEFAULT), 0}, // 89
+  {CMD_TIMEOUT(DEFAULT), 0}, // 90
+  {CMD_TIMEOUT(DEFAULT), 0}, // 91
+  {CMD_TIMEOUT(DEFAULT), 0}, // 92
+  {CMD_TIMEOUT(DEFAULT), 0}, // 93
+  {CMD_TIMEOUT(DEFAULT), 0}, // 94
+  {CMD_TIMEOUT(DEFAULT), 0}, // 95
+  {CMD_TIMEOUT(DEFAULT), 0}, // 96
+  {CMD_TIMEOUT(DEFAULT), 0}, // 97
+  {CMD_TIMEOUT(DEFAULT), 0}, // 98
+  {CMD_TIMEOUT(DEFAULT), 0}, // 99
+  {CMD_TIMEOUT(DEFAULT), 0}, //100
+  {CMD_TIMEOUT(DEFAULT), 0}, //101
+  {CMD_TIMEOUT(DEFAULT), 0}, //102
+  {CMD_TIMEOUT(DEFAULT), 0}, //103
+  {CMD_TIMEOUT(DEFAULT), 0}, //104
+  {CMD_TIMEOUT(DEFAULT), 0}, //105
+  {CMD_TIMEOUT(DEFAULT), 0}, //106
+  {CMD_TIMEOUT(DEFAULT), 0}, //107
+  {CMD_TIMEOUT(DEFAULT), 0}, //108
+  {CMD_TIMEOUT(DEFAULT), 0}, //109
+  {CMD_TIMEOUT(DEFAULT), 0}, //110
+  {CMD_TIMEOUT(DEFAULT), 0}, //111
+  {CMD_TIMEOUT(DEFAULT), 0}, //112
+  {CMD_TIMEOUT(DEFAULT), 0}, //113
+  {CMD_TIMEOUT(DEFAULT), 0}, //114
+  {CMD_TIMEOUT(DEFAULT), 0}, //115
+  {CMD_TIMEOUT(DEFAULT), 0}, //116
+  {CMD_TIMEOUT(DEFAULT), 0}, //117
+  {CMD_TIMEOUT(DEFAULT), 0}, //118
+  {CMD_TIMEOUT(DEFAULT), 0}, //119
+  {CMD_TIMEOUT(DEFAULT), 0}, //120
+  {CMD_TIMEOUT(DEFAULT), 0}, //121
+  {CMD_TIMEOUT(DEFAULT), 0}, //122
+  {CMD_TIMEOUT(DEFAULT), 0}, //123
+  {CMD_TIMEOUT(DEFAULT), 0}, //124
+  {CMD_TIMEOUT(DEFAULT), 0}, //125
+  {CMD_TIMEOUT(DEFAULT), 0}, //126
+  {CMD_TIMEOUT(DEFAULT), 0}, //127
+  {CMD_TIMEOUT(DEFAULT), 0}, //128
+  {CMD_TIMEOUT(DEFAULT), 0}, //129
+  {CMD_TIMEOUT(DEFAULT), 0}, //130
+  {CMD_TIMEOUT(DEFAULT), 0}, //131
+  {CMD_TIMEOUT(DEFAULT), 0}, //132
+  {CMD_TIMEOUT(DEFAULT), 0}, //133
+  {CMD_TIMEOUT(DEFAULT), 0}, //134
+  {CMD_TIMEOUT(DEFAULT), 0}, //135
+  {CMD_TIMEOUT(DEFAULT), 0}, //136
+  {CMD_TIMEOUT(DEFAULT), 0}, //137
+  {CMD_TIMEOUT(DEFAULT), 0}, //138
+  {CMD_TIMEOUT(DEFAULT), 0}, //139
+  {CMD_TIMEOUT(DEFAULT), 0}, //140
+  {CMD_TIMEOUT(DEFAULT), 0}, //141
+  {CMD_TIMEOUT(DEFAULT), 0}, //142
+  {CMD_TIMEOUT(DEFAULT), 0}, //143
+  {CMD_TIMEOUT(DEFAULT), 0}, //144
+  {CMD_TIMEOUT(DEFAULT), 0}, //145
+  {CMD_TIMEOUT(DEFAULT), 0}, //146
+  {CMD_TIMEOUT(DEFAULT), 0}, //147
+  {CMD_TIMEOUT(DEFAULT), 0}, //148
+  {CMD_TIMEOUT(DEFAULT), 0}, //149
+  {CMD_TIMEOUT(DEFAULT), 0}, //150
+  {CMD_TIMEOUT(DEFAULT), 0}, //151
+  {CMD_TIMEOUT(DEFAULT), 0}, //152
+  {CMD_TIMEOUT(DEFAULT), 0}, //153
+  {CMD_TIMEOUT(DEFAULT), 0}, //154
+  {CMD_TIMEOUT(DEFAULT), 0}, //155
+  {CMD_TIMEOUT(DEFAULT), 0}, //156
+  {CMD_TIMEOUT(DEFAULT), 0}, //157
+  {CMD_TIMEOUT(DEFAULT), 0}, //158
+  {CMD_TIMEOUT(DEFAULT), 0}, //159
+  {CMD_TIMEOUT(DEFAULT), 0}, //160
+  {CMD_TIMEOUT(DEFAULT), 0}, //161
+  {CMD_TIMEOUT(DEFAULT), 0}, //162
+  {CMD_TIMEOUT(DEFAULT), 0}, //163
+  {CMD_TIMEOUT(DEFAULT), 0}, //164
+  {CMD_TIMEOUT(DEFAULT), 0}, //165
+  {CMD_TIMEOUT(DEFAULT), 0}, //166
+  {CMD_TIMEOUT(DEFAULT), 0}, //167
+  {CMD_TIMEOUT(DEFAULT), 0}, //168
+  {CMD_TIMEOUT(DEFAULT), 0}, //169
+  {CMD_TIMEOUT(DEFAULT), 0}, //170
+  {CMD_TIMEOUT(DEFAULT), 0}, //171
+  {CMD_TIMEOUT(DEFAULT), 0}, //172
+  {CMD_TIMEOUT(DEFAULT), 0}, //173
+  {CMD_TIMEOUT(DEFAULT), 0}, //174
+  {CMD_TIMEOUT(DEFAULT), 0}, //175
+  {CMD_TIMEOUT(DEFAULT), 0}, //176
+  {CMD_TIMEOUT(DEFAULT), 0}, //177
+  {CMD_TIMEOUT(DEFAULT), 0}, //178
+  {CMD_TIMEOUT(DEFAULT), 0}, //179
+  {CMD_TIMEOUT(DEFAULT), 0}, //180
+  {CMD_TIMEOUT(DEFAULT), 0}, //181
+  {CMD_TIMEOUT(DEFAULT), 0}, //182
+  {CMD_TIMEOUT(DEFAULT), 0}, //183
+  {CMD_TIMEOUT(DEFAULT), 0}, //184
+  {CMD_TIMEOUT(DEFAULT), 0}, //185
+  {CMD_TIMEOUT(DEFAULT), 0}, //186
+  {CMD_TIMEOUT(DEFAULT), 0}, //187
+  {CMD_TIMEOUT(DEFAULT), 0}, //188
+  {CMD_TIMEOUT(DEFAULT), 0}, //189
+  {CMD_TIMEOUT(DEFAULT), 0}, //190
+  {CMD_TIMEOUT(DEFAULT), 0}, //191
+  {CMD_TIMEOUT(DEFAULT), 0}, //192
+  {CMD_TIMEOUT(DEFAULT), 0}, //193
+  {CMD_TIMEOUT(DEFAULT), 0}, //194
+  {CMD_TIMEOUT(DEFAULT), 0}, //195
+  {CMD_TIMEOUT(DEFAULT), 0}, //196
+  {CMD_TIMEOUT(DEFAULT), 0}, //197
+  {CMD_TIMEOUT(DEFAULT), 0}, //198
+  {CMD_TIMEOUT(DEFAULT), 0}, //199
+  {CMD_TIMEOUT(DEFAULT), 0}, //200
+  {CMD_TIMEOUT(DEFAULT), 0}, //201
+  {CMD_TIMEOUT(DEFAULT), 0}, //202
+  {CMD_TIMEOUT(DEFAULT), 0}, //203
+  {CMD_TIMEOUT(DEFAULT), 0}, //204
+  {CMD_TIMEOUT(DEFAULT), 0}, //205
+  {CMD_TIMEOUT(DEFAULT), 0}, //206
+  {CMD_TIMEOUT(DEFAULT), 0}, //207
+  {CMD_TIMEOUT(DEFAULT), 0}, //208
+  {CMD_TIMEOUT(DEFAULT), 0}, //209
+  {CMD_TIMEOUT(DEFAULT), 0}, //210
+  {CMD_TIMEOUT(DEFAULT), 0}, //211
+  {CMD_TIMEOUT(DEFAULT), 0}, //212
+  {CMD_TIMEOUT(DEFAULT), 0}, //213
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_LM75A_TEMP_SENSOR_LIST_CMD_RESP_ID 214
+  {CMD_TIMEOUT(DEFAULT), 0}, // 215
+  {CMD_TIMEOUT(DEFAULT), 0}, // 216
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_ANALOG_TEMP_SENSOR_LIST_CMD_RESP_ID 217
+  {CMD_TIMEOUT(DEFAULT), 2}, // GET_LM75A_SENSOR_VALUE_CMD_RESP_ID 218
+  {CMD_TIMEOUT(DEFAULT), 2}, // GET_ANALOG_SENSOR_VALUE_CMD_RESP_ID 219
+  {CMD_TIMEOUT(DEFAULT), 2}, // GET_SOFT_SENSOR_VALUE_CMD_RESP_ID 220
+  {CMD_TIMEOUT(DEFAULT), 7}, // GET_LM75A_TEMP_SENSOR_CALIB_CMD_RESP_ID 221
+  {CMD_TIMEOUT(DEFAULT), 7}, // GET_ANALOG_TEMP_SENSOR_CALIB_CMD_RESP_ID 222
+  {CMD_TIMEOUT(DEFAULT), 0}, // 223
+  {CMD_TIMEOUT(DEFAULT), 0}, // 224
+  {CMD_TIMEOUT(DEFAULT), 0}, // 225
+  {CMD_TIMEOUT(DEFAULT), 0}, // 226
+  {CMD_TIMEOUT(DEFAULT), 0}, // 227
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_LIST_CMD_RESP_ID 228
+  {CMD_TIMEOUT(DEFAULT), 0}, // 229
+  {CMD_TIMEOUT(DEFAULT), 0}, // 230
+  {CMD_TIMEOUT(DEFAULT), 0}, // 231
+  {CMD_TIMEOUT(DEFAULT), 0}, // 232
+  {CMD_TIMEOUT(DEFAULT), 0}, // 233
+  {CMD_TIMEOUT(DEFAULT), 0}, // 234
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_LM75A_TEMP_SENSOR_LIST_CMD_RESP_ID 235
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_ANALOG_TEMP_SENSOR_LIST_CMD_RESP_ID 236
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_SOFT_TEMP_SENSOR_LIST_CMD_RESP_ID 237
+  {CMD_TIMEOUT(DEFAULT), 0}, // 238
+  {CMD_TIMEOUT(DEFAULT), 0}, // 239
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_N_CURVE_POINTS_CMD_RESP_ID 240
+  {CMD_TIMEOUT(DEFAULT), 3}, // GET_FAN_CURVE_POINT_CMD_RESP_ID 241
+  {CMD_TIMEOUT(DEFAULT), 2}, // GET_FAN_RPM_CMD_RESP 242
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_OUTPUT_RESPONSE 243
+  {CMD_TIMEOUT(DEFAULT), 0}, //244
+  {CMD_TIMEOUT(DEFAULT), 2}, // GET_FAN_ADC_VALUE_RESPONSE 245
+  {CMD_TIMEOUT(DEFAULT), 1}, // GET_FAN_OUTPUT_RESPONSE 246
+  {CMD_TIMEOUT(DEFAULT), 0}, //247
+  {CMD_TIMEOUT(DEFAULT), 0}, //248
+  {CMD_TIMEOUT(DEFAULT), 6}, // GET_FAN_DUTY_CYCLE_RESPONSE 249
+  {CMD_TIMEOUT(DEFAULT), 0}, //250
+  {CMD_TIMEOUT(DEFAULT), 6}, // GET_FAN_VOLTAGE_RESPONSE 251
+  {CMD_TIMEOUT(DEFAULT), 0}, //252
+  {CMD_TIMEOUT(DEFAULT), 2}, // GET_FAN_MODE_TRANSITIONS 253
+  {CMD_TIMEOUT(DEFAULT), 0}, //254
+  {CMD_TIMEOUT(DEFAULT), 2}, // ACK 255
 };
 
 void sl_init(sl_device *sl_dev)
@@ -377,11 +377,11 @@ void *sl_read_thread(void *param)
     if(bptr+ret==buf) {
 
       //If waiting for command response
-      if(__atomic_load_n(&sl_dev->req_cmd, __ATOMIC_SEQ_CST)>=0) {
+      if((req_cmd=__atomic_load_n(&sl_dev->req_cmd, __ATOMIC_SEQ_CST))>=0) {
 	++num_trials;
 
 	//If writing seems out of sync
-	if(num_trials>SL_CMD_NUM_READ_TRIALS) {
+	if(num_trials>cmd_info[req_cmd].timeout) {
 	  fprintf(stderr,"%s: Warning: Writing out of sync!\n",__func__);
 	  fprintf(stderr,"***********************************************************************************************\n");
 	  sl_dev->status|=SL_WRITE_OUT_OF_SYNC;
@@ -401,7 +401,7 @@ void *sl_read_thread(void *param)
     //Last read byte
     bptr=buf+ret;
     //cmd_nbytes includes checksum, but not ID
-    cmd_nbytes=input_cmd_nbytes[*cmd_start]+1;
+    cmd_nbytes=cmd_info[*cmd_start].resp_nbytes+1;
 
     //While it is possible that the read data contains the candidate command
     while(cmd_nbytes+1 <= bptr-cmd_start) {
@@ -451,7 +451,7 @@ void *sl_read_thread(void *param)
 	}
 	++cmd_start;
 	assert(cmd_start<=bptr);
-	cmd_nbytes=input_cmd_nbytes[*cmd_start]+1;
+	cmd_nbytes=cmd_info[*cmd_start].resp_nbytes+1;
       }
     }
     DEBUG_PRINT2("Copy %li bytes from %p to %p. bptr is %p\n",bptr-cmd_start, cmd_start, buf, bptr);

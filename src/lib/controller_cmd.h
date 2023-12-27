@@ -30,15 +30,16 @@
 static inline int send_receive_ping_cmd(void){struct req_resp rr={{PING_CMD_ID},{PING_CMD_ID}}; return send_recv_cmd(&gGlobals.sl_dev, &rr);}
 static inline int send_receive_reset_cmd(void){struct req_resp rr={{RESET_CMD_ID},{RESET_CMD_ID}}; return send_recv_cmd(&gGlobals.sl_dev, &rr);}
 
+static inline int send_receive_eeprom_save_cmd(void){struct req_resp rr={{EEPROM_SAVE_CMD_REQ_ID},{ACK_CMD_ID}}; int ret=send_recv_cmd(&gGlobals.sl_dev, &rr); if(ret) return ret; CHECK_ACK_REPLY(rr); return 0;}
+
+static inline int send_receive_silence_alarm_cmd(void){struct req_resp rr={{SILENCE_ALARM_CMD_REQ_ID},{ACK_CMD_ID}}; int ret=send_recv_cmd(&gGlobals.sl_dev, &rr); if(ret) return ret; CHECK_ACK_REPLY(rr); return 0;}
+
 int send_receive_get_lm75a_temp_sensor_list_cmd(uint8_t* const list);
 int send_receive_add_lm75a_temp_sensor_cmd(const uint8_t id);
 int send_receive_del_lm75a_temp_sensor_cmd(const uint8_t id);
 int send_receive_get_analog_temp_sensor_list_cmd(uint8_t* const list);
 int send_receive_add_analog_temp_sensor_cmd(const uint8_t id);
 int send_receive_del_analog_temp_sensor_cmd(const uint8_t id);
-int send_receive_get_soft_temp_sensor_list_cmd(uint8_t* const list);
-int send_receive_add_soft_temp_sensor_cmd(const uint8_t id);
-int send_receive_del_soft_temp_sensor_cmd(const uint8_t id);
 int send_receive_get_lm75a_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_analog_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_soft_sensor_value_cmd(const uint8_t id, int16_t* const value);
@@ -65,12 +66,10 @@ int send_receive_del_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t ind
 int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const ncurvepoints);
 
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
-int send_receive_get_fan_off_level_cmd(const uint8_t id, int16_t* const off_level);
-int send_receive_get_fan_voltage_cmd(const uint8_t id, uint16_t* const voltage);
-int send_receive_get_fan_voltage_target_cmd(const uint8_t id, uint16_t* const voltage);
-int send_receive_fan_adc_calibration_cmd(const uint8_t id);
 
+int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode);
 int send_receive_switch_fan_control_cmd(const uint8_t id, const uint8_t mode);
+int send_receive_get_fan_adc_value_cmd(const uint8_t id, int16_t* const adc_value);
 int send_receive_get_fan_output_cmd(const uint8_t id, uint8_t* const output);
 int send_receive_set_fan_output_cmd(const uint8_t id, const uint8_t output);
 int send_receive_set_fan_output_auto_cmd(const uint8_t id, const uint8_t output);
