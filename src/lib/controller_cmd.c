@@ -297,11 +297,12 @@ int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{GET_FAN_RPM_CMD_REQ_ID, {id}, 1},{GET_FAN_RPM_CMD_RESP_ID}};
+  struct req_resp rr={{GET_FAN_TACH_TICKS_CMD_REQ_ID, {id}, 1},{GET_FAN_TACH_TICKS_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
-  *rpm=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  int16_t tach_ticks=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *rpm = (abs(tach_ticks)==INT16_MAX?0:convert_fan_rpm(tach_ticks));
   return 0;
 }
 
