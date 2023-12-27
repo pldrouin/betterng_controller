@@ -384,10 +384,12 @@ int send_receive_get_fan_duty_cycle_response_cmd(const uint8_t id, uint16_t* con
   return 0;
 }
 
-int send_receive_set_fan_duty_cycle_response_cmd(const uint8_t id, const uint16_t dc_no_out, const int16_t ddcdout)
+int send_receive_set_fan_duty_cycle_response_cmd(const uint8_t id, uint16_t dc_no_out, const int16_t ddcdout)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{SET_FAN_DUTY_CYCLE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(dc_no_out>>8), (uint8_t)dc_no_out, (uint8_t)(ddcdout>>8), (uint8_t)ddcdout}, 5},{ACK_CMD_ID}};
+  const int16_t d2dcdout2 = calc_d2dcdout2(dc_no_out, ddcdout);
+  dc_no_out = calc_dcnoout(ddcdout, d2dcdout2);
+  struct req_resp rr={{SET_FAN_DUTY_CYCLE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(dc_no_out>>8), (uint8_t)dc_no_out, (uint8_t)(ddcdout>>8), (uint8_t)ddcdout, (uint8_t)(d2dcdout2>>8), (uint8_t)d2dcdout2}, 7},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -411,7 +413,8 @@ int send_receive_get_fan_voltage_response_cmd(const uint8_t id, uint16_t* const 
 int send_receive_set_fan_voltage_response_cmd(const uint8_t id, const uint16_t v_no_out, const int16_t dvdout)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(v_no_out>>8), (uint8_t)v_no_out, (uint8_t)(dvdout>>8), (uint8_t)dvdout}, 5},{ACK_CMD_ID}};
+  const int16_t d2vdout2 = calc_d2vdout2(v_no_out, dvdout);
+  struct req_resp rr={{SET_FAN_VOLTAGE_RESPONSE_CMD_REQ_ID, {id, (uint8_t)(v_no_out>>8), (uint8_t)v_no_out, (uint8_t)(dvdout>>8), (uint8_t)dvdout, (uint8_t)(d2vdout2>>8), (uint8_t)d2vdout2}, 7},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
