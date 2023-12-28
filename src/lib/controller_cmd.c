@@ -541,9 +541,9 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Turn fan to mid voltage
   printf("Turning fan %u to mid voltage...\n",id);
-  uint8_t output=(intermediate_voltage>0?round((double)intermediate_voltage*FAN_MAX_VOLTAGE_SCALE/FAN_MAX_REAL_VOLTAGE):round(UINT8_MAX*0.5*((double)min_voltage/FAN_MAX_REAL_VOLTAGE+1)));
-  const double mid_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)output)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
-  ret=send_receive_set_fan_output_cmd(id, output);
+  uint8_t voutput=(intermediate_voltage>0?round(UINT8_MAX*(double)intermediate_voltage/FAN_MAX_REAL_VOLTAGE):round(UINT8_MAX*0.5*((double)min_voltage/FAN_MAX_REAL_VOLTAGE+1)));
+  const double mid_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
+  ret=send_receive_set_fan_output_cmd(id, voutput);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
@@ -561,9 +561,9 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Turn fan to low voltage
   printf("Turning fan %u to low voltage...\n",id);
-  output=ceil(UINT8_MAX*(double)min_voltage/FAN_MAX_REAL_VOLTAGE);
-  const double low_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)output)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
-  ret=send_receive_set_fan_output_cmd(id, output);
+  voutput=ceil(UINT8_MAX*(double)min_voltage/FAN_MAX_REAL_VOLTAGE);
+  const double low_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
+  ret=send_receive_set_fan_output_cmd(id, voutput);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
@@ -695,9 +695,9 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Turn fan to mid output
   printf("Turning fan %u to mid output...\n",id);
-  uint8_t output=(intermediate_duty_cycle>0?intermediate_duty_cycle:round(UINT8_MAX*0.5*((double)min_duty_cycle/UINT8_MAX+1)));
-  const double mid_duty_cycle = output;
-  ret=send_receive_set_fan_output_cmd(id, output);
+  uint8_t dcoutput=(intermediate_duty_cycle>0?intermediate_duty_cycle:round(UINT8_MAX*0.5*((double)min_duty_cycle/UINT8_MAX+1)));
+  const double mid_duty_cycle = dcoutput;
+  ret=send_receive_set_fan_output_cmd(id, dcoutput);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
