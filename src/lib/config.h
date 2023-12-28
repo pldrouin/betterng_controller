@@ -50,14 +50,21 @@ int config_del_lm75a_temp_sensor(void);
 int config_get_analog_temp_sensor_list(void);
 int config_add_analog_temp_sensor(void);
 int config_del_analog_temp_sensor(void);
-int config_get_lm75a_sensor_value(void);
-int config_get_analog_sensor_value(void);
-int config_get_soft_sensor_value(void);
+int config_get_lm75a_temp_sensor_value(void);
+int config_get_analog_temp_sensor_value(void);
+int config_get_soft_temp_sensor_value(void);
 int config_get_lm75a_temp_sensor_calib(void);
 int config_get_analog_temp_sensor_calib(void);
 int config_set_lm75a_temp_sensor_calib(void);
 int config_set_analog_temp_sensor_calib(void);
 int config_set_soft_temp_sensor_value(void);
+int config_get_lm75a_temp_sensor_alarm_value(void);
+int config_get_analog_temp_sensor_alarm_value(void);
+int config_get_soft_temp_sensor_alarm_value(void);
+int config_set_lm75a_temp_sensor_alarm_value(void);
+int config_set_analog_temp_sensor_alarm_value(void);
+int config_set_soft_temp_sensor_alarm_value(void);
+
 int config_get_fan_list(void);
 
 int config_add_fan(void);
@@ -74,6 +81,7 @@ int config_del_fan_soft_temp_sensor(void);
 int config_add_fan_curve_point(void);
 int config_del_fan_curve_point(void);
 int config_get_fan_n_curve_points(void);
+int config_get_fan_curve_point(void);
 
 int config_get_fan_rpm(void);
 int config_get_fan_mode(void);
@@ -84,8 +92,10 @@ int config_set_fan_output(void);
 int config_set_fan_output_auto(void);
 int config_get_fan_duty_cycle_response(void);
 int config_set_fan_duty_cycle_response(void);
+int config_set_fan_proportional_duty_cycle_response(void);
 int config_get_fan_voltage_response(void);
 int config_set_fan_voltage_response(void);
+int config_set_fan_proportional_voltage_response(void);
 int config_get_fan_mode_transitions(void);
 int config_set_fan_mode_transitions(void);
 

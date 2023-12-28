@@ -85,14 +85,21 @@ void config_ht_populate()
   HT_SET_FUNC(get_analog_temp_sensor_list);
   HT_SET_FUNC(add_analog_temp_sensor);
   HT_SET_FUNC(del_analog_temp_sensor);
-  HT_SET_FUNC(get_lm75a_sensor_value);
-  HT_SET_FUNC(get_analog_sensor_value);
-  HT_SET_FUNC(get_soft_sensor_value);
+  HT_SET_FUNC(get_lm75a_temp_sensor_value);
+  HT_SET_FUNC(get_analog_temp_sensor_value);
+  HT_SET_FUNC(get_soft_temp_sensor_value);
   HT_SET_FUNC(get_lm75a_temp_sensor_calib);
   HT_SET_FUNC(get_analog_temp_sensor_calib);
   HT_SET_FUNC(set_lm75a_temp_sensor_calib);
   HT_SET_FUNC(set_analog_temp_sensor_calib);
   HT_SET_FUNC(set_soft_temp_sensor_value);
+
+  HT_SET_FUNC(get_lm75a_temp_sensor_alarm_value);
+  HT_SET_FUNC(get_analog_temp_sensor_alarm_value);
+  HT_SET_FUNC(get_soft_temp_sensor_alarm_value);
+  HT_SET_FUNC(set_lm75a_temp_sensor_alarm_value);
+  HT_SET_FUNC(set_analog_temp_sensor_alarm_value);
+  HT_SET_FUNC(set_soft_temp_sensor_alarm_value);
 
   HT_SET_FUNC(get_fan_list);
   HT_SET_FUNC(add_fan);
@@ -109,6 +116,7 @@ void config_ht_populate()
   HT_SET_FUNC(add_fan_curve_point);
   HT_SET_FUNC(del_fan_curve_point);
   HT_SET_FUNC(get_fan_n_curve_points);
+  HT_SET_FUNC(get_fan_curve_point);
 
   HT_SET_FUNC(get_fan_rpm);
   HT_SET_FUNC(get_fan_mode);
@@ -119,8 +127,10 @@ void config_ht_populate()
   HT_SET_FUNC(set_fan_output_auto);
   HT_SET_FUNC(get_fan_duty_cycle_response);
   HT_SET_FUNC(set_fan_duty_cycle_response);
+  HT_SET_FUNC(set_fan_proportional_duty_cycle_response);
   HT_SET_FUNC(get_fan_voltage_response);
   HT_SET_FUNC(set_fan_voltage_response);
+  HT_SET_FUNC(set_fan_proportional_voltage_response);
   HT_SET_FUNC(calibrate_fan_voltage_response);
   HT_SET_FUNC(calibrate_fan_duty_cycle_response);
   HT_SET_FUNC(get_fan_mode_transitions);
@@ -140,14 +150,20 @@ int config_help(void)
   printf(BSTR "get_analog_temp_sensor_list" UBSTR "\n");
   printf(BSTR "add_analog_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_analog_temp_sensor" UBSTR " id\n");
-  printf(BSTR "get_lm75a_sensor_value" UBSTR " id\n");
-  printf(BSTR "get_analog_sensor_value" UBSTR " id\n");
-  printf(BSTR "get_soft_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_lm75a_temp_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_analog_temp_sensor_value" UBSTR " id\n");
+  printf(BSTR "get_soft_temp_sensor_value" UBSTR " id\n");
   printf(BSTR "get_lm75a_temp_sensor_calib" UBSTR " id\n");
   printf(BSTR "get_analog_temp_sensor_calib" UBSTR " id\n");
   printf(BSTR "set_lm75a_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
   printf(BSTR "set_analog_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
   printf(BSTR "set_soft_temp_sensor_value" UBSTR " id value\n");
+  printf(BSTR "get_lm75a_temp_sensor_alarm_value" UBSTR " id\n");
+  printf(BSTR "get_analog_temp_sensor_alarm_value" UBSTR " id\n");
+  printf(BSTR "get_soft_temp_sensor_alarm_value" UBSTR " id\n");
+  printf(BSTR "set_lm75a_temp_sensor_alarm_value" UBSTR " id alarm_value\n");
+  printf(BSTR "set_analog_temp_sensor_alarm_value" UBSTR " id alarm_value\n");
+  printf(BSTR "set_soft_temp_sensor_alarm_value" UBSTR " id alarm_value\n");
   printf(BSTR "get_fan_list" UBSTR "\n");
   printf(BSTR "add_fan" UBSTR " id\n");
   printf(BSTR "del_fan" UBSTR " id\n");
@@ -163,17 +179,20 @@ int config_help(void)
   printf(BSTR "add_fan_curve_point" UBSTR " fan_id temp output\n");
   printf(BSTR "del_fan_curve_point" UBSTR " fan_id index\n");
   printf(BSTR "get_fan_n_curve_points" UBSTR " fan_id\n");
+  printf(BSTR "get_fan_curve_point" UBSTR " fan_id index\n");
   printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_mode" UBSTR " fan_id\n"); 
-  printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/auto\n"); 
+  printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/voltage_auto/pwm_auto\n"); 
   printf(BSTR "get_fan_adc_value" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
   printf(BSTR "set_fan_output_auto" UBSTR " fan_id 0-255\n"); 
   printf(BSTR "get_fan_duty_cycle_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_duty_cycle_response" UBSTR " fan_id dc_no_out ddcdout\n"); 
+  printf(BSTR "set_fan_proportional_duty_cycle_response" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout\n"); 
+  printf(BSTR "set_fan_proportional_voltage_response" UBSTR " fan_id\n"); 
   printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id min_duty_cycle intermediate_duty_cycle|0\n"); 
   printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id min_voltage intermediate_voltage|0\n"); 
   printf(BSTR "get_fan_mode_transitions" UBSTR " fan_id\n"); 
@@ -436,48 +455,48 @@ int config_del_analog_temp_sensor(void)
   return 0;
 }
 
-int config_get_lm75a_sensor_value(void)
+int config_get_lm75a_temp_sensor_value(void)
 {
   uint8_t id;
   CONFIG_GET_SENSOR_ID(id);
   int16_t value;
-  int ret=send_receive_get_lm75a_sensor_value_cmd(id, &value);
+  int ret=send_receive_get_lm75a_temp_sensor_value_cmd(id, &value);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Get LM75a temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%f C\n", value/256.);
+  printf("%i/256 C\n", value);
   return 0;
 }
 
-int config_get_analog_sensor_value(void)
+int config_get_analog_temp_sensor_value(void)
 {
   uint8_t id;
   CONFIG_GET_SENSOR_ID(id);
   int16_t value;
-  int ret=send_receive_get_analog_sensor_value_cmd(id, &value);
+  int ret=send_receive_get_analog_temp_sensor_value_cmd(id, &value);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Get analog temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%f C\n", value/256.);
+  printf("%i/256 C\n", value);
   return 0;
 }
 
-int config_get_soft_sensor_value(void)
+int config_get_soft_temp_sensor_value(void)
 {
   uint8_t id;
   CONFIG_GET_SENSOR_ID(id);
   int16_t value;
-  int ret=send_receive_get_soft_sensor_value_cmd(id, &value);
+  int ret=send_receive_get_soft_temp_sensor_value_cmd(id, &value);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Get soft temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%f C\n", value/256.);
+  printf("%i/256 C\n", value);
   return 0;
 }
 
@@ -595,6 +614,114 @@ int config_set_soft_temp_sensor_value(void)
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set soft temperature sensor value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_lm75a_temp_sensor_alarm_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t alarm_value;
+  int ret=send_receive_get_lm75a_temp_sensor_alarm_value_cmd(id, &alarm_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get LM75A temperature sensor alarm_value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%i/256 C\n", alarm_value);
+  return 0;
+}
+
+int config_get_analog_temp_sensor_alarm_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t alarm_value;
+  int ret=send_receive_get_analog_temp_sensor_alarm_value_cmd(id, &alarm_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get analog temperature sensor alarm_value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%i/256 C\n", alarm_value);
+  return 0;
+}
+
+int config_get_soft_temp_sensor_alarm_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t alarm_value;
+  int ret=send_receive_get_soft_temp_sensor_alarm_value_cmd(id, &alarm_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get soft temperature sensor alarm_value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%i/256 C\n", alarm_value);
+  return 0;
+}
+
+int config_set_lm75a_temp_sensor_alarm_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t alarm_value;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing alarm_value parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &alarm_value);
+
+  int ret=send_receive_set_lm75a_temp_sensor_alarm_value_cmd(id, alarm_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set LM75A temperature sensor alarm value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_set_analog_temp_sensor_alarm_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t alarm_value;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing alarm_value parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &alarm_value);
+
+  int ret=send_receive_set_analog_temp_sensor_alarm_value_cmd(id, alarm_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set analog temperature sensor alarm value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_set_soft_temp_sensor_alarm_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  int16_t alarm_value;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing alarm_value parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &alarm_value);
+
+  int ret=send_receive_set_soft_temp_sensor_alarm_value_cmd(id, alarm_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set soft temperature sensor alarm value failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;
@@ -838,6 +965,29 @@ int config_get_fan_n_curve_points(void)
   return 0;
 }
 
+int config_get_fan_curve_point(void)
+{
+  uint8_t fan_id;
+  CONFIG_GET_FAN_ID(fan_id);
+  uint8_t index;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan curve point index value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &index);
+  int8_t temp;
+  uint8_t output;
+  int ret=send_receive_get_fan_curve_point_cmd(fan_id, index, &temp, &output);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan curve point failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%" SCNi8": %" SCNu8 "\n",temp,output);
+  return 0;
+}
+
 
 int config_get_fan_rpm(void)
 {
@@ -886,7 +1036,9 @@ int config_switch_fan_control(void)
 
   else if(!argsdiffer(gGlobals.pbuf, "pwm")) mode=FAN_PWM_MODE;
 
-  else if(!argsdiffer(gGlobals.pbuf, "auto")) mode=FAN_AUTO_FLAG;
+  else if(!argsdiffer(gGlobals.pbuf, "voltage_auto")) mode=FAN_VOLTAGE_MODE|FAN_AUTO_FLAG;
+
+  else if(!argsdiffer(gGlobals.pbuf, "pwm_auto")) mode=FAN_PWM_MODE|FAN_AUTO_FLAG;
 
   else {
     fprintf(stderr, "%s: Error: Fan control mode '%s' is invalid!\n", __func__, gGlobals.pbuf);
@@ -1020,6 +1172,19 @@ int config_set_fan_duty_cycle_response(void)
   return 0;
 }
 
+int config_set_fan_proportional_duty_cycle_response(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int ret=send_receive_set_fan_proportional_duty_cycle_response_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan proportional duty cycle response failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
 int config_get_fan_voltage_response(void)
 {
   uint8_t id;
@@ -1062,6 +1227,19 @@ int config_set_fan_voltage_response(void)
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan voltage response failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_set_fan_proportional_voltage_response(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int ret=send_receive_set_fan_proportional_voltage_response_cmd(id);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan proportional voltage response failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;

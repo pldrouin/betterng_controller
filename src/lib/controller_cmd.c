@@ -60,9 +60,9 @@ int send_receive_del_analog_temp_sensor_cmd(const uint8_t id)
   return 0;
 }
 
-int send_receive_get_lm75a_sensor_value_cmd(const uint8_t id, int16_t* const value)
+int send_receive_get_lm75a_temp_sensor_value_cmd(const uint8_t id, int16_t* const value)
 {
-  struct req_resp rr={{GET_LM75A_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_SENSOR_VALUE_CMD_RESP_ID}};
+  struct req_resp rr={{GET_LM75A_TEMP_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_TEMP_SENSOR_VALUE_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -70,9 +70,9 @@ int send_receive_get_lm75a_sensor_value_cmd(const uint8_t id, int16_t* const val
   return 0;
 }
 
-int send_receive_get_analog_sensor_value_cmd(const uint8_t id, int16_t* const value)
+int send_receive_get_analog_temp_sensor_value_cmd(const uint8_t id, int16_t* const value)
 {
-  struct req_resp rr={{GET_ANALOG_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_SENSOR_VALUE_CMD_RESP_ID}};
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_VALUE_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -80,9 +80,9 @@ int send_receive_get_analog_sensor_value_cmd(const uint8_t id, int16_t* const va
   return 0;
 }
 
-int send_receive_get_soft_sensor_value_cmd(const uint8_t id, int16_t* const value)
+int send_receive_get_soft_temp_sensor_value_cmd(const uint8_t id, int16_t* const value)
 {
-  struct req_resp rr={{GET_SOFT_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_SOFT_SENSOR_VALUE_CMD_RESP_ID}};
+  struct req_resp rr={{GET_SOFT_TEMP_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_SOFT_TEMP_SENSOR_VALUE_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -137,6 +137,66 @@ int send_receive_set_analog_temp_sensor_calib_cmd(const uint8_t id, const int16_
 int send_receive_set_soft_temp_sensor_value_cmd(const uint8_t id, const int16_t value)
 {
   struct req_resp rr={{SET_SOFT_TEMP_SENSOR_VALUE_CMD_REQ_ID, {id, (uint8_t)(value>>8), (uint8_t)value}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_lm75a_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value)
+{
+  struct req_resp rr={{GET_LM75A_TEMP_SENSOR_ALARM_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_TEMP_SENSOR_ALARM_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *alarm_value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
+int send_receive_get_analog_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value)
+{
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_ALARM_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_ALARM_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *alarm_value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
+int send_receive_get_soft_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value)
+{
+  struct req_resp rr={{GET_SOFT_TEMP_SENSOR_ALARM_VALUE_CMD_REQ_ID, {id}, 1},{GET_SOFT_TEMP_SENSOR_ALARM_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *alarm_value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
+int send_receive_set_lm75a_temp_sensor_alarm_value_cmd(const uint8_t id, const int16_t alarm_value)
+{
+  struct req_resp rr={{SET_LM75A_TEMP_SENSOR_ALARM_VALUE_CMD_REQ_ID, {id, (uint8_t)(alarm_value>>8), (uint8_t)alarm_value}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_set_analog_temp_sensor_alarm_value_cmd(const uint8_t id, const int16_t alarm_value)
+{
+  struct req_resp rr={{SET_ANALOG_TEMP_SENSOR_ALARM_VALUE_CMD_REQ_ID, {id, (uint8_t)(alarm_value>>8), (uint8_t)alarm_value}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_set_soft_temp_sensor_alarm_value_cmd(const uint8_t id, const int16_t alarm_value)
+{
+  struct req_resp rr={{SET_SOFT_TEMP_SENSOR_ALARM_VALUE_CMD_REQ_ID, {id, (uint8_t)(alarm_value>>8), (uint8_t)alarm_value}, 3},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -291,6 +351,18 @@ int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const
 
   if(ret) return ret;
   *ncurvepoints=rr.resp.bytes[0];
+  return 0;
+}
+
+int send_receive_get_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index, int8_t* const temp, uint8_t* const output)
+{
+  struct req_resp rr={{GET_FAN_CURVE_POINT_CMD_REQ_ID, {fan_id, index}, 2},{GET_FAN_CURVE_POINT_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  if(rr.resp.bytes[2]) return (int8_t)rr.resp.bytes[2];
+  *temp=(int8_t)rr.resp.bytes[0];
+  *output=rr.resp.bytes[1];
   return 0;
 }
 
@@ -513,7 +585,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Change fan calibration to simple proportional response
   printf("Changing fan %u voltage response to simple proportional response...\n",id);
-  ret=send_receive_set_fan_voltage_response_cmd(id, 0, FAN_CORRECTED_MAX_VOLTAGE_SCALE);
+  ret=send_receive_set_fan_proportional_voltage_response_cmd(id);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u voltage response failed!\n",__func__,id);
@@ -542,7 +614,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
   //Turn fan to mid voltage
   printf("Turning fan %u to mid voltage...\n",id);
   uint8_t voutput=(intermediate_voltage>0?round(UINT8_MAX*(double)intermediate_voltage/FAN_MAX_REAL_VOLTAGE):round(UINT8_MAX*0.5*((double)min_voltage/FAN_MAX_REAL_VOLTAGE+1)));
-  const double mid_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
+  const double mid_voltage = (double)((int16_t)(((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8)) >> FAN_MAX_VOLTAGE_SCALE_SHIFT)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
   ret=send_receive_set_fan_output_cmd(id, voutput);
 
   if(ret) {
@@ -562,7 +634,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
   //Turn fan to low voltage
   printf("Turning fan %u to low voltage...\n",id);
   voutput=ceil(UINT8_MAX*(double)min_voltage/FAN_MAX_REAL_VOLTAGE);
-  const double low_voltage = (double)((int16_t)((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8) / FAN_MAX_VOLTAGE_SCALE)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
+  const double low_voltage = (double)((int16_t)(((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8)) >> FAN_MAX_VOLTAGE_SCALE_SHIFT)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
   ret=send_receive_set_fan_output_cmd(id, voutput);
 
   if(ret) {
@@ -676,7 +748,7 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Change fan calibration to simple proportional response
   printf("Changing fan %u response to simple proportional response...\n",id);
-  ret=send_receive_set_fan_duty_cycle_response_cmd(id, 0, 256*64);
+  ret=send_receive_set_fan_proportional_duty_cycle_response_cmd(id);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u duty cycle response failed!\n",__func__,id);

@@ -38,14 +38,20 @@ int send_receive_del_lm75a_temp_sensor_cmd(const uint8_t id);
 int send_receive_get_analog_temp_sensor_list_cmd(uint8_t* const list);
 int send_receive_add_analog_temp_sensor_cmd(const uint8_t id);
 int send_receive_del_analog_temp_sensor_cmd(const uint8_t id);
-int send_receive_get_lm75a_sensor_value_cmd(const uint8_t id, int16_t* const value);
-int send_receive_get_analog_sensor_value_cmd(const uint8_t id, int16_t* const value);
-int send_receive_get_soft_sensor_value_cmd(const uint8_t id, int16_t* const value);
+int send_receive_get_lm75a_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
+int send_receive_get_analog_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
+int send_receive_get_soft_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_lm75a_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2);
 int send_receive_get_analog_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2);
 int send_receive_set_lm75a_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2);
 int send_receive_set_analog_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2);
 int send_receive_set_soft_temp_sensor_value_cmd(const uint8_t id, const int16_t value);
+int send_receive_get_lm75a_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value);
+int send_receive_get_analog_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value);
+int send_receive_get_soft_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value);
+int send_receive_set_lm75a_temp_sensor_alarm_value_cmd(const uint8_t id, const int16_t alarm_value);
+int send_receive_set_analog_temp_sensor_alarm_value_cmd(const uint8_t id, const int16_t alarm_value);
+int send_receive_set_soft_temp_sensor_alarm_value_cmd(const uint8_t id, const int16_t alarm_value);
 
 int send_receive_get_fan_list_cmd(uint8_t* const list);
 int send_receive_add_fan_cmd(const uint8_t id);
@@ -62,6 +68,7 @@ int send_receive_del_fan_soft_temp_sensor_cmd(const uint8_t fan_id, const uint8_
 int send_receive_add_fan_curve_point_cmd(const uint8_t fan_id, const int8_t temp, const uint8_t output);
 int send_receive_del_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index);
 int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const ncurvepoints);
+int send_receive_get_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index, int8_t* const temp, uint8_t* const output);
 
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
 
@@ -73,8 +80,10 @@ int send_receive_set_fan_output_cmd(const uint8_t id, const uint8_t output);
 int send_receive_set_fan_output_auto_cmd(const uint8_t id, const uint8_t output);
 int send_receive_get_fan_duty_cycle_response_cmd(const uint8_t id, uint16_t* const dc_no_out, int16_t* const ddcdout, int16_t* const d2dcdout2);
 int send_receive_set_fan_duty_cycle_response_cmd(const uint8_t id, const uint16_t dc_no_out, const int16_t ddcdout);
+static inline int send_receive_set_fan_proportional_duty_cycle_response_cmd(const uint8_t id){return send_receive_set_fan_duty_cycle_response_cmd(id, 0, 256*64);}
 int send_receive_get_fan_voltage_response_cmd(const uint8_t id, uint16_t* const v_no_out, int16_t* const dvdout, int16_t* const d2vdout2);
 int send_receive_set_fan_voltage_response_cmd(const uint8_t id, const uint16_t v_no_out, const int16_t dvdout);
+static inline int send_receive_set_fan_proportional_voltage_response_cmd(const uint8_t id){return send_receive_set_fan_voltage_response_cmd(id, 0, FAN_CORRECTED_MAX_VOLTAGE_SCALE);}
 int send_receive_get_fan_mode_transitions_cmd(const uint8_t id, uint8_t* const pwm_to_voltage_output, uint8_t* const voltage_to_pwm_output);
 int send_receive_set_fan_mode_transitions_cmd(const uint8_t id, const uint8_t pwm_to_voltage_output, const uint8_t voltage_to_pwm_output);
 
