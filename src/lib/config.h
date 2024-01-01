@@ -84,6 +84,10 @@ int config_get_fan_n_curve_points(void);
 int config_get_fan_curve_point(void);
 
 int config_get_fan_rpm(void);
+
+int config_get_fan_hysterisis(void);
+int config_set_fan_hysterisis(void);
+
 int config_get_fan_mode(void);
 int config_switch_fan_control(void);
 int config_get_fan_adc_value(void);

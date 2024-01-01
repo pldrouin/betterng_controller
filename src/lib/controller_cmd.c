@@ -378,6 +378,28 @@ int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
   return 0;
 }
 
+int send_receive_get_fan_hysterisis_cmd(const uint8_t id, uint8_t* const hysterisis)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_HYSTERISIS_CMD_REQ_ID, {id}, 1},{GET_FAN_HYSTERISIS_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *hysterisis=rr.resp.bytes[0];
+  return 0;
+}
+
+int send_receive_set_fan_hysterisis_cmd(const uint8_t id, const uint8_t hysterisis)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{SET_FAN_HYSTERISIS_CMD_REQ_ID, {id, hysterisis}, 2},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
 int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode)
 {
   CHECK_FAN_ID(id);

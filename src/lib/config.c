@@ -119,6 +119,10 @@ void config_ht_populate()
   HT_SET_FUNC(get_fan_curve_point);
 
   HT_SET_FUNC(get_fan_rpm);
+
+  HT_SET_FUNC(get_fan_hysterisis);
+  HT_SET_FUNC(set_fan_hysterisis);
+
   HT_SET_FUNC(get_fan_mode);
   HT_SET_FUNC(switch_fan_control);
   HT_SET_FUNC(get_fan_adc_value);
@@ -181,6 +185,8 @@ int config_help(void)
   printf(BSTR "get_fan_n_curve_points" UBSTR " fan_id\n");
   printf(BSTR "get_fan_curve_point" UBSTR " fan_id index\n");
   printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
+  printf(BSTR "get_fan_hysterisis" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_hysterisis" UBSTR " fan_id hysterisis\n"); 
   printf(BSTR "get_fan_mode" UBSTR " fan_id\n"); 
   printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/voltage_auto/pwm_auto\n"); 
   printf(BSTR "get_fan_adc_value" UBSTR " fan_id\n"); 
@@ -1001,6 +1007,43 @@ int config_get_fan_rpm(void)
     return ret;
   }
   printf("%i\n", rpm);
+  return 0;
+}
+
+int config_get_fan_hysterisis(void)
+{
+  uint8_t id;
+  uint8_t hysterisis;
+  CONFIG_GET_FAN_ID(id);
+
+  int ret=send_receive_get_fan_hysterisis_cmd(id, &hysterisis);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan hysterisis failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%u C\n",hysterisis);
+  return 0;
+}
+
+int config_set_fan_hysterisis(void)
+{
+  uint8_t id;
+  uint8_t hysterisis;
+  CONFIG_GET_FAN_ID(id);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan hysterisis value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNu8, &hysterisis);
+
+  int ret=send_receive_set_fan_hysterisis_cmd(id, hysterisis);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set fan hysterisis failed with error %i!\n",__func__, ret);
+    return ret;
+  }
   return 0;
 }
 

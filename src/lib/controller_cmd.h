@@ -72,6 +72,9 @@ int send_receive_get_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t ind
 
 int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
 
+int send_receive_get_fan_hysterisis_cmd(const uint8_t id, uint8_t* const hysterisis);
+int send_receive_set_fan_hysterisis_cmd(const uint8_t id, const uint8_t hysterisis);
+
 int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode);
 int send_receive_switch_fan_control_cmd(const uint8_t id, const uint8_t mode);
 int send_receive_get_fan_adc_value_cmd(const uint8_t id, int16_t* const adc_value);

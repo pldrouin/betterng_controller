@@ -1,11 +1,11 @@
 #include "serial.h"
 
-//#define DEBUG_PRINT printf
-//#define printtime printtime
-#define DEBUG_PRINT(...)
-#define printtime(...)
-//#define DEBUG_PRINT2 printf
-#define DEBUG_PRINT2(...)
+#define DEBUG_PRINT printf
+#define printtime printtime
+//#define DEBUG_PRINT(...)
+//#define printtime(...)
+#define DEBUG_PRINT2 printf
+//#define DEBUG_PRINT2(...)
 
 #ifdef __FreeBSD__
 #define B500000 500000
