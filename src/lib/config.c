@@ -118,13 +118,17 @@ void config_ht_populate()
   HT_SET_FUNC(get_fan_n_curve_points);
   HT_SET_FUNC(get_fan_curve_point);
 
-  HT_SET_FUNC(get_fan_rpm);
-
   HT_SET_FUNC(get_fan_hysterisis);
   HT_SET_FUNC(set_fan_hysterisis);
 
+  HT_SET_FUNC(get_fan_max_rpm);
+  HT_SET_FUNC(set_fan_max_rpm);
+  HT_SET_FUNC(get_fan_min_rpm);
+  HT_SET_FUNC(set_fan_min_rpm);
+  HT_SET_FUNC(get_fan_rpm);
+
   HT_SET_FUNC(get_fan_mode);
-  HT_SET_FUNC(switch_fan_control);
+  HT_SET_FUNC(switch_fan_mode);
   HT_SET_FUNC(get_fan_adc_value);
   HT_SET_FUNC(get_fan_output);
   HT_SET_FUNC(set_fan_output);
@@ -184,11 +188,15 @@ int config_help(void)
   printf(BSTR "del_fan_curve_point" UBSTR " fan_id index\n");
   printf(BSTR "get_fan_n_curve_points" UBSTR " fan_id\n");
   printf(BSTR "get_fan_curve_point" UBSTR " fan_id index\n");
-  printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_hysterisis" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_hysterisis" UBSTR " fan_id hysterisis\n"); 
+  printf(BSTR "get_fan_max_rpm" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_max_rpm" UBSTR " fan_id max_rpm\n"); 
+  printf(BSTR "get_fan_min_rpm" UBSTR " fan_id\n"); 
+  printf(BSTR "set_fan_min_rpm" UBSTR " fan_id min_rpm\n"); 
+  printf(BSTR "get_fan_rpm" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_mode" UBSTR " fan_id\n"); 
-  printf(BSTR "switch_fan_control" UBSTR " fan_id voltage/pwm/voltage_auto/pwm_auto\n"); 
+  printf(BSTR "switch_fan_mode" UBSTR " fan_id voltage/pwm/voltage_auto/pwm_auto\n"); 
   printf(BSTR "get_fan_adc_value" UBSTR " fan_id\n"); 
   printf(BSTR "get_fan_output" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_output" UBSTR " fan_id 0-255\n"); 
@@ -994,22 +1002,6 @@ int config_get_fan_curve_point(void)
   return 0;
 }
 
-
-int config_get_fan_rpm(void)
-{
-  uint8_t id;
-  CONFIG_GET_FAN_ID(id);
-  int16_t rpm;
-  int ret=send_receive_get_fan_rpm_cmd(id, &rpm);
-
-  if(ret) {
-    fprintf(stderr,"%s: Error: Get fan RPM failed with error %i!\n",__func__, ret);
-    return ret;
-  }
-  printf("%i\n", rpm);
-  return 0;
-}
-
 int config_get_fan_hysterisis(void)
 {
   uint8_t id;
@@ -1047,6 +1039,101 @@ int config_set_fan_hysterisis(void)
   return 0;
 }
 
+int config_get_fan_max_rpm(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int16_t max_rpm;
+  int ret=send_receive_get_fan_max_rpm_cmd(id, &max_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan max RPM failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%i\n", max_rpm);
+  return 0;
+}
+
+int config_set_fan_max_rpm(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int16_t max_rpm;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan max RPM value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNi16, &max_rpm);
+
+  if(max_rpm<=0) {
+    fprintf(stderr,"%s: Error: Fan max RPM value must be strictly positive!\n",__func__);
+    return -1;
+  }
+  int ret=send_receive_set_fan_max_rpm_cmd(id, max_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set max fan RPM failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_min_rpm(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int16_t min_rpm;
+  int ret=send_receive_get_fan_min_rpm_cmd(id, &min_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan min RPM failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%i\n", min_rpm);
+  return 0;
+}
+
+int config_set_fan_min_rpm(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int16_t min_rpm;
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing fan min RPM value!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf, "%" SCNi16, &min_rpm);
+
+  if(min_rpm<=0) {
+    fprintf(stderr,"%s: Error: Fan min RPM value must be strictly positive!\n",__func__);
+    return -1;
+  }
+  int ret=send_receive_set_fan_min_rpm_cmd(id, min_rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set min fan RPM failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_get_fan_rpm(void)
+{
+  uint8_t id;
+  CONFIG_GET_FAN_ID(id);
+  int16_t rpm;
+  int ret=send_receive_get_fan_rpm_cmd(id, &rpm);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get fan RPM failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("%i\n", rpm);
+  return 0;
+}
+
 int config_get_fan_mode(void)
 {
   uint8_t id;
@@ -1063,7 +1150,7 @@ int config_get_fan_mode(void)
   return 0;
 }
 
-int config_switch_fan_control(void)
+int config_switch_fan_mode(void)
 {
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
@@ -1087,7 +1174,7 @@ int config_switch_fan_control(void)
     fprintf(stderr, "%s: Error: Fan control mode '%s' is invalid!\n", __func__, gGlobals.pbuf);
     return -1;
   }
-  int ret=send_receive_switch_fan_control_cmd(id, mode);
+  int ret=send_receive_switch_fan_mode_cmd(id, mode);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Switch fan control mode failed with error %i!\n",__func__, ret);

@@ -70,13 +70,17 @@ int send_receive_del_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t ind
 int send_receive_get_fan_n_curve_points_cmd(const uint8_t fan_id, uint8_t* const ncurvepoints);
 int send_receive_get_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t index, int8_t* const temp, uint8_t* const output);
 
-int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
-
 int send_receive_get_fan_hysterisis_cmd(const uint8_t id, uint8_t* const hysterisis);
 int send_receive_set_fan_hysterisis_cmd(const uint8_t id, const uint8_t hysterisis);
 
+int send_receive_get_fan_max_rpm_cmd(const uint8_t id, int16_t* const max_rpm);
+int send_receive_set_fan_max_rpm_cmd(const uint8_t id, const int16_t max_rpm);
+int send_receive_get_fan_min_rpm_cmd(const uint8_t id, int16_t* const min_rpm);
+int send_receive_set_fan_min_rpm_cmd(const uint8_t id, const int16_t min_rpm);
+int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
+
 int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode);
-int send_receive_switch_fan_control_cmd(const uint8_t id, const uint8_t mode);
+int send_receive_switch_fan_mode_cmd(const uint8_t id, const uint8_t mode);
 int send_receive_get_fan_adc_value_cmd(const uint8_t id, int16_t* const adc_value);
 int send_receive_get_fan_output_cmd(const uint8_t id, uint8_t* const output);
 int send_receive_set_fan_output_cmd(const uint8_t id, const uint8_t output);

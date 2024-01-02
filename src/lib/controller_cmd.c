@@ -366,18 +366,6 @@ int send_receive_get_fan_curve_point_cmd(const uint8_t fan_id, const uint8_t ind
   return 0;
 }
 
-int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
-{
-  CHECK_FAN_ID(id);
-  struct req_resp rr={{GET_FAN_TACH_TICKS_CMD_REQ_ID, {id}, 1},{GET_FAN_TACH_TICKS_CMD_RESP_ID}};
-  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
-
-  if(ret) return ret;
-  int16_t tach_ticks=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
-  *rpm = (abs(tach_ticks)==INT16_MAX?0:convert_fan_rpm(tach_ticks));
-  return 0;
-}
-
 int send_receive_get_fan_hysterisis_cmd(const uint8_t id, uint8_t* const hysterisis)
 {
   CHECK_FAN_ID(id);
@@ -400,6 +388,64 @@ int send_receive_set_fan_hysterisis_cmd(const uint8_t id, const uint8_t hysteris
   return 0;
 }
 
+int send_receive_get_fan_max_rpm_cmd(const uint8_t id, int16_t* const max_rpm)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_MIN_TACH_TICKS_CMD_REQ_ID, {id}, 1},{GET_FAN_MIN_TACH_TICKS_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  int16_t min_tach_ticks=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *max_rpm = (abs(min_tach_ticks)==0?INT16_MAX:convert_fan_rpm(min_tach_ticks));
+  return 0;
+}
+
+int send_receive_set_fan_max_rpm_cmd(const uint8_t id, const int16_t max_rpm)
+{
+  const int16_t min_tach_ticks = (max_rpm==INT16_MAX?0:convert_fan_ticks(max_rpm));
+  struct req_resp rr={{SET_FAN_MIN_TACH_TICKS_CMD_REQ_ID, {id, (uint8_t)(min_tach_ticks>>8), (uint8_t)(min_tach_ticks)}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_fan_min_rpm_cmd(const uint8_t id, int16_t* const min_rpm)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_MAX_TACH_TICKS_CMD_REQ_ID, {id}, 1},{GET_FAN_MAX_TACH_TICKS_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  int16_t min_tach_ticks=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *min_rpm = (abs(min_tach_ticks)==0?INT16_MAX:convert_fan_rpm(min_tach_ticks));
+  return 0;
+}
+
+int send_receive_set_fan_min_rpm_cmd(const uint8_t id, const int16_t min_rpm)
+{
+  const int16_t min_tach_ticks = (min_rpm==INT16_MAX?0:convert_fan_ticks(min_rpm));
+  struct req_resp rr={{SET_FAN_MAX_TACH_TICKS_CMD_REQ_ID, {id, (uint8_t)(min_tach_ticks>>8), (uint8_t)(min_tach_ticks)}, 3},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm)
+{
+  CHECK_FAN_ID(id);
+  struct req_resp rr={{GET_FAN_TACH_TICKS_CMD_REQ_ID, {id}, 1},{GET_FAN_TACH_TICKS_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  int16_t tach_ticks=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *rpm = (abs(tach_ticks)==INT16_MAX?0:convert_fan_rpm(tach_ticks));
+  return 0;
+}
+
 int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode)
 {
   CHECK_FAN_ID(id);
@@ -411,10 +457,10 @@ int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode)
   return 0;
 }
 
-int send_receive_switch_fan_control_cmd(const uint8_t id, const uint8_t mode)
+int send_receive_switch_fan_mode_cmd(const uint8_t id, const uint8_t mode)
 {
   CHECK_FAN_ID(id);
-  struct req_resp rr={{SWITCH_FAN_CONTROL_CMD_REQ_ID, {id, mode}, 2},{ACK_CMD_ID}};
+  struct req_resp rr={{SWITCH_FAN_MODE_CMD_REQ_ID, {id, mode}, 2},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
@@ -598,7 +644,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Switch fan to PWM mode as it is the only way to reach the maximum voltage
   printf("Switching fan %u to PWM mode...\n",id);
-  ret=send_receive_switch_fan_control_cmd(id, FAN_PWM_MODE);
+  ret=send_receive_switch_fan_mode_cmd(id, FAN_PWM_MODE);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Switch fan %u control mode failed!\n",__func__,id);
@@ -626,7 +672,7 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Switch fan to voltage mode
   printf("Switching fan %u to voltage mode...\n",id);
-  ret=send_receive_switch_fan_control_cmd(id, FAN_VOLTAGE_MODE);
+  ret=send_receive_switch_fan_mode_cmd(id, FAN_VOLTAGE_MODE);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Switch fan %u control mode failed!\n",__func__,id);
@@ -761,7 +807,7 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Switch fan to PWM mode as it is the only way to reach the maximum voltage
   printf("Switching fan %u to PWM mode...\n",id);
-  ret=send_receive_switch_fan_control_cmd(id, FAN_PWM_MODE);
+  ret=send_receive_switch_fan_mode_cmd(id, FAN_PWM_MODE);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Switch fan %u control mode failed!\n",__func__,id);
