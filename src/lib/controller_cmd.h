@@ -42,9 +42,11 @@ int send_receive_get_lm75a_temp_sensor_value_cmd(const uint8_t id, int16_t* cons
 int send_receive_get_analog_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_soft_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_lm75a_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2);
-int send_receive_get_analog_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2);
+int send_receive_get_analog_temp_sensor_calib0_cmd(const uint8_t id, float* a0, float* a1);
+int send_receive_get_analog_temp_sensor_calib1_cmd(const uint8_t id, float* a2, int16_t* shift);
 int send_receive_set_lm75a_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2);
-int send_receive_set_analog_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2);
+int send_receive_set_analog_temp_sensor_calib0_cmd(const uint8_t id, const float a0, const float a1);
+int send_receive_set_analog_temp_sensor_calib1_cmd(const uint8_t id, const float a2, const int16_t shift);
 int send_receive_set_soft_temp_sensor_value_cmd(const uint8_t id, const int16_t value);
 int send_receive_get_lm75a_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value);
 int send_receive_get_analog_temp_sensor_alarm_value_cmd(const uint8_t id, int16_t* const alarm_value);

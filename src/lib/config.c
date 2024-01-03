@@ -89,9 +89,11 @@ void config_ht_populate()
   HT_SET_FUNC(get_analog_temp_sensor_value);
   HT_SET_FUNC(get_soft_temp_sensor_value);
   HT_SET_FUNC(get_lm75a_temp_sensor_calib);
-  HT_SET_FUNC(get_analog_temp_sensor_calib);
+  HT_SET_FUNC(get_analog_temp_sensor_calib0);
+  HT_SET_FUNC(get_analog_temp_sensor_calib1);
   HT_SET_FUNC(set_lm75a_temp_sensor_calib);
-  HT_SET_FUNC(set_analog_temp_sensor_calib);
+  HT_SET_FUNC(set_analog_temp_sensor_calib0);
+  HT_SET_FUNC(set_analog_temp_sensor_calib1);
   HT_SET_FUNC(set_soft_temp_sensor_value);
 
   HT_SET_FUNC(get_lm75a_temp_sensor_alarm_value);
@@ -162,9 +164,11 @@ int config_help(void)
   printf(BSTR "get_analog_temp_sensor_value" UBSTR " id\n");
   printf(BSTR "get_soft_temp_sensor_value" UBSTR " id\n");
   printf(BSTR "get_lm75a_temp_sensor_calib" UBSTR " id\n");
-  printf(BSTR "get_analog_temp_sensor_calib" UBSTR " id\n");
+  printf(BSTR "get_analog_temp_sensor_calib0" UBSTR " id\n");
+  printf(BSTR "get_analog_temp_sensor_calib1" UBSTR " id\n");
   printf(BSTR "set_lm75a_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
-  printf(BSTR "set_analog_temp_sensor_calib" UBSTR " id a0 a1 a2\n");
+  printf(BSTR "set_analog_temp_sensor_calib0" UBSTR " id a0 a1\n");
+  printf(BSTR "set_analog_temp_sensor_calib1" UBSTR " id a2 shift\n");
   printf(BSTR "set_soft_temp_sensor_value" UBSTR " id value\n");
   printf(BSTR "get_lm75a_temp_sensor_alarm_value" UBSTR " id\n");
   printf(BSTR "get_analog_temp_sensor_alarm_value" UBSTR " id\n");
@@ -531,20 +535,36 @@ int config_get_lm75a_temp_sensor_calib(void)
   return 0;
 }
 
-int config_get_analog_temp_sensor_calib(void)
+int config_get_analog_temp_sensor_calib0(void)
 {
   uint8_t id;
   CONFIG_GET_SENSOR_ID(id);
-  int16_t a0, a1, a2;
-  int ret=send_receive_get_analog_temp_sensor_calib_cmd(id, &a0, &a1, &a2);
+  float a0, a1;
+  int ret=send_receive_get_analog_temp_sensor_calib0_cmd(id, &a0, &a1);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Get analog temperature sensor calibration failed with error %i!\n",__func__, ret);
+    fprintf(stderr,"%s: Error: Get analog temperature sensor calibration 0 failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("a0 = %" SCNi16 " C\n", a0);
-  printf("a1 = %" SCNi16 " / 2^14 C\n", a1);
-  printf("a2 = %" SCNi16 " / 2^28 C\n", a2);
+  printf("a0 = %22.15f\n", a0);
+  printf("a1 = %22.15f\n", a1);
+  return 0;
+}
+
+int config_get_analog_temp_sensor_calib1(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  float a2;
+  int16_t shift;
+  int ret=send_receive_get_analog_temp_sensor_calib1_cmd(id, &a2, &shift);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get analog temperature sensor calibration 1 failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("a2 = %22.15f\n", a2);
+  printf("shift = %" SCNi16 " C\n", shift);
   return 0;
 }
 
@@ -580,33 +600,56 @@ int config_set_lm75a_temp_sensor_calib(void)
   return 0;
 }
 
-int config_set_analog_temp_sensor_calib(void)
+int config_set_analog_temp_sensor_calib0(void)
 {
   uint8_t id;
   CONFIG_GET_SENSOR_ID(id);
-  int16_t a0, a1, a2;
+  float a0, a1;
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
     fprintf(stderr,"%s: Error: Missing a0 parameter!\n",__func__);
     return -1;
   }
-  sscanf(gGlobals.pbuf,"%" SCNi16, &a0);
+  sscanf(gGlobals.pbuf,"%f", &a0);
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
     fprintf(stderr,"%s: Error: Missing a1 parameter!\n",__func__);
     return -1;
   }
-  sscanf(gGlobals.pbuf,"%" SCNi16, &a1);
+  sscanf(gGlobals.pbuf,"%f", &a1);
+
+  int ret=send_receive_set_analog_temp_sensor_calib0_cmd(id, a0, a1);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Set analog temperature sensor calibration 0 failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  return 0;
+}
+
+int config_set_analog_temp_sensor_calib1(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  float a2;
+  int16_t shift;
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
     fprintf(stderr,"%s: Error: Missing a2 parameter!\n",__func__);
     return -1;
   }
-  sscanf(gGlobals.pbuf,"%" SCNi16, &a2);
-  int ret=send_receive_set_analog_temp_sensor_calib_cmd(id, a0, a1, a2);
+  sscanf(gGlobals.pbuf,"%f", &a2);
+
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+    fprintf(stderr,"%s: Error: Missing shift parameter!\n",__func__);
+    return -1;
+  }
+  sscanf(gGlobals.pbuf,"%" SCNi16, &shift);
+
+  int ret=send_receive_set_analog_temp_sensor_calib1_cmd(id, a2, shift);
 
   if(ret) {
-    fprintf(stderr,"%s: Error: Set analog temperature sensor calibration failed with error %i!\n",__func__, ret);
+    fprintf(stderr,"%s: Error: Set analog temperature sensor calibration 1 failed with error %i!\n",__func__, ret);
     return ret;
   }
   return 0;

@@ -102,15 +102,34 @@ int send_receive_get_lm75a_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, 
   return 0;
 }
 
-int send_receive_get_analog_temp_sensor_calib_cmd(const uint8_t id, int16_t* a0, int16_t* a1, int16_t* a2)
+int send_receive_get_analog_temp_sensor_calib0_cmd(const uint8_t id, float* a0, float* a1)
 {
-  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_CALIB_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_CALIB_CMD_RESP_ID}};
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_CALIB0_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_CALIB0_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
-  *a0=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
-  *a1=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[2]);
-  *a2=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[4]);
+  uint32_t i32=be32toh(*(uint32_t*)&rr.resp.bytes[0]);
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  *a0=*(float*)&i32;
+  i32=be32toh(*(uint32_t*)&rr.resp.bytes[4]);
+  *a1=*(float*)&i32;
+  #pragma GCC diagnostic pop
+  return 0;
+}
+
+int send_receive_get_analog_temp_sensor_calib1_cmd(const uint8_t id, float* a2, int16_t* shift)
+{
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_CALIB1_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_CALIB1_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  uint32_t i32=be32toh(*(uint32_t*)&rr.resp.bytes[0]);
+  *a2=*(float*)&i32;
+  #pragma GCC diagnostic pop
+  *shift=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[4]);
   return 0;
 }
 
@@ -124,9 +143,28 @@ int send_receive_set_lm75a_temp_sensor_calib_cmd(const uint8_t id, const int16_t
   return 0;
 }
 
-int send_receive_set_analog_temp_sensor_calib_cmd(const uint8_t id, const int16_t a0, const int16_t a1, const int16_t a2)
+int send_receive_set_analog_temp_sensor_calib0_cmd(const uint8_t id, const float a0, const float a1)
 {
-  struct req_resp rr={{SET_ANALOG_TEMP_SENSOR_CALIB_CMD_REQ_ID, {id, (uint8_t)(a0>>8), (uint8_t)a0, (uint8_t)(a1>>8), (uint8_t)a1, (uint8_t)(a2>>8), (uint8_t)a2}, 7},{ACK_CMD_ID}};
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  uint32_t ua0=*(uint32_t*)&a0;
+  uint32_t ua1=*(uint32_t*)&a1;
+  #pragma GCC diagnostic pop
+  struct req_resp rr={{SET_ANALOG_TEMP_SENSOR_CALIB0_CMD_REQ_ID, {id, (uint8_t)(ua0>>24), (uint8_t)(ua0>>16), (uint8_t)(ua0>>8), (uint8_t)ua0, (uint8_t)(ua1>>24), (uint8_t)(ua1>>16), (uint8_t)(ua1>>8), (uint8_t)ua1}, 9},{ACK_CMD_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  CHECK_ACK_REPLY(rr);
+  return 0;
+}
+
+int send_receive_set_analog_temp_sensor_calib1_cmd(const uint8_t id, const float a2, const int16_t shift)
+{
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  uint32_t ua2=*(uint32_t*)&a2;
+  #pragma GCC diagnostic pop
+  struct req_resp rr={{SET_ANALOG_TEMP_SENSOR_CALIB1_CMD_REQ_ID, {id, (uint8_t)(ua2>>24), (uint8_t)(ua2>>16), (uint8_t)(ua2>>8), (uint8_t)ua2, (uint8_t)(shift>>8), (uint8_t)shift}, 7},{ACK_CMD_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
