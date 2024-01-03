@@ -586,27 +586,18 @@ int send_receive_set_fan_mode_transitions_cmd(const uint8_t id, const uint8_t pw
   return 0;
 }
 
-int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_voltage, const uint16_t intermediate_voltage)
+int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint8_t low_proportional_output, uint8_t mid_proportional_output)
 {
   CHECK_FAN_ID(id);
 
-  if(min_voltage >= FAN_MAX_REAL_VOLTAGE) {
-    fprintf(stderr,"%s: Error: min_voltage value must be smaller than %u!\n",__func__,FAN_MAX_REAL_VOLTAGE);
-    return -1;
-  }
+  if(mid_proportional_output > 0) {
 
-  if(intermediate_voltage > 0) {
-
-    if(intermediate_voltage >= FAN_MAX_REAL_VOLTAGE) {
-      fprintf(stderr,"%s: Error: intermediate_voltage value must be smaller than %u!\n",__func__,FAN_MAX_REAL_VOLTAGE);
+    if(mid_proportional_output <= low_proportional_output) {
+      fprintf(stderr,"%s: Error: mid_proportional_output value must be larger than low_proportional_output!\n",__func__);
       return -1;
     }
 
-    if(intermediate_voltage <= min_voltage) {
-      fprintf(stderr,"%s: Error: intermediate_voltage value must be larger than min_voltage!\n",__func__);
-      return -1;
-    }
-  }
+  } else mid_proportional_output=round(0.5*(low_proportional_output+UINT8_MAX));
   uint8_t init_output;
 
   //Check if fan is active
@@ -681,9 +672,8 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Turn fan to mid voltage
   printf("Turning fan %u to mid voltage...\n",id);
-  uint8_t voutput=(intermediate_voltage>0?round(UINT8_MAX*(double)intermediate_voltage/FAN_MAX_REAL_VOLTAGE):round(UINT8_MAX*0.5*((double)min_voltage/FAN_MAX_REAL_VOLTAGE+1)));
-  const double mid_voltage = (double)((int16_t)(((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8)) >> FAN_MAX_VOLTAGE_SCALE_SHIFT)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
-  ret=send_receive_set_fan_output_cmd(id, voutput);
+  const double mid_voltage = (double)((int16_t)(((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)mid_proportional_output)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8)) >> FAN_MAX_VOLTAGE_SCALE_SHIFT)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
+  ret=send_receive_set_fan_output_cmd(id, mid_proportional_output);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
@@ -701,9 +691,8 @@ int calibrate_fan_voltage_response_cmd(const uint8_t id, const uint16_t min_volt
 
   //Turn fan to low voltage
   printf("Turning fan %u to low voltage...\n",id);
-  voutput=ceil(UINT8_MAX*(double)min_voltage/FAN_MAX_REAL_VOLTAGE);
-  const double low_voltage = (double)((int16_t)(((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)voutput)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8)) >> FAN_MAX_VOLTAGE_SCALE_SHIFT)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
-  ret=send_receive_set_fan_output_cmd(id, voutput);
+  const double low_voltage = (double)((int16_t)(((int32_t)FAN_OFF_LEVEL_DEFAULT_VALUE * (int16_t)((((int32_t)low_proportional_output)*FAN_CORRECTED_MAX_VOLTAGE_SCALE)>>8)) >> FAN_MAX_VOLTAGE_SCALE_SHIFT)) * FAN_MAX_VOLTAGE_SCALE / FAN_OFF_LEVEL_DEFAULT_VALUE;
+  ret=send_receive_set_fan_output_cmd(id, low_proportional_output);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
@@ -762,14 +751,18 @@ resume_fan_output:
   return ret;
 }
 
-int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_duty_cycle, const uint8_t intermediate_duty_cycle)
+int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t low_duty_cycle, uint8_t mid_duty_cycle)
 {
   CHECK_FAN_ID(id);
 
-  if(intermediate_duty_cycle>0 && intermediate_duty_cycle <= min_duty_cycle) {
-    fprintf(stderr,"%s: Error: intermediate_duty_cycle value must be larger than min_duty_cycle!\n",__func__);
-    return -1;
-  }
+  if(mid_duty_cycle>0) {
+
+    if(mid_duty_cycle <= low_duty_cycle) {
+      fprintf(stderr,"%s: Error: mid_duty_cycle value must be larger than low_duty_cycle!\n",__func__);
+      return -1;
+    }
+
+  } else mid_duty_cycle = round(0.5*(low_duty_cycle+UINT8_MAX));
   uint8_t init_output;
 
   //Check if fan is active
@@ -835,9 +828,7 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Turn fan to mid output
   printf("Turning fan %u to mid output...\n",id);
-  uint8_t dcoutput=(intermediate_duty_cycle>0?intermediate_duty_cycle:round(UINT8_MAX*0.5*((double)min_duty_cycle/UINT8_MAX+1)));
-  const double mid_duty_cycle = dcoutput;
-  ret=send_receive_set_fan_output_cmd(id, dcoutput);
+  ret=send_receive_set_fan_output_cmd(id, mid_duty_cycle);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
@@ -855,8 +846,7 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
 
   //Turn fan to low output
   printf("Turning fan %u to low output...\n",id);
-  const double low_duty_cycle = min_duty_cycle;
-  ret=send_receive_set_fan_output_cmd(id, min_duty_cycle);
+  ret=send_receive_set_fan_output_cmd(id, low_duty_cycle);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Set fan %u output failed!\n",__func__,id);
@@ -876,14 +866,14 @@ int calibrate_fan_duty_cycle_response_cmd(const uint8_t id, const uint8_t min_du
   const double low_output = low_rpm/max_rpm * UINT8_MAX;
   printf("max_rpm %f, mid_rpm is %f, low_rpm is %f\n", max_rpm, mid_rpm, low_rpm);
   printf("mid_output is %f, low_output is %f\n", mid_output, low_output);
-  printf("mid_duty_cycle is %f, low_duty_cycle is %f\n", mid_duty_cycle, low_duty_cycle);
+  printf("mid_duty_cycle is %u, low_duty_cycle is %u\n", mid_duty_cycle, low_duty_cycle);
 
   const double mid_a = ((uint16_t)UINT8_MAX)*UINT8_MAX-mid_output*mid_output;
   const double mid_b = mid_output*(UINT8_MAX-mid_output);
-  const double mid_c = mid_duty_cycle*((uint16_t)UINT8_MAX)*UINT8_MAX - (double)UINT8_MAX*mid_output*mid_output;
+  const double mid_c = (double)mid_duty_cycle*((uint16_t)UINT8_MAX)*UINT8_MAX - (double)UINT8_MAX*mid_output*mid_output;
   const double low_a = ((uint16_t)UINT8_MAX)*UINT8_MAX-low_output*low_output;
   const double low_b = low_output*(UINT8_MAX-low_output);
-  const double low_c = low_duty_cycle*((uint16_t)UINT8_MAX)*UINT8_MAX - (double)UINT8_MAX*low_output*low_output;
+  const double low_c = (double)low_duty_cycle*((uint16_t)UINT8_MAX)*UINT8_MAX - (double)UINT8_MAX*low_output*low_output;
   //printf("Matrix is\n%f\t%f\n%f\t%f\n",mid_a,mid_b,low_a,low_b);
 
   const double det=mid_a*low_b-mid_b*low_a;

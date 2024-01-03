@@ -207,8 +207,8 @@ int config_help(void)
   printf(BSTR "get_fan_voltage_response" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_voltage_response" UBSTR " fan_id v_no_out dvdout\n"); 
   printf(BSTR "set_fan_proportional_voltage_response" UBSTR " fan_id\n"); 
-  printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id min_duty_cycle intermediate_duty_cycle|0\n"); 
-  printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id min_voltage intermediate_voltage|0\n"); 
+  printf(BSTR "calibrate_fan_duty_cycle_response" UBSTR " fan_id low_duty_cycle mid_duty_cycle|0\n"); 
+  printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id low_proportional_output mid_proportional_output|0\n"); 
   printf(BSTR "get_fan_mode_transitions" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_mode_transitions" UBSTR " fan_id pwm_to_voltage_output voltage_to_pwm_output\n"); 
   return 0;
@@ -480,7 +480,7 @@ int config_get_lm75a_temp_sensor_value(void)
     fprintf(stderr,"%s: Error: Get LM75a temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i/256 C\n", value);
+  printf("%i/256 (%.2f) C\n", value, value/256.);
   return 0;
 }
 
@@ -495,7 +495,7 @@ int config_get_analog_temp_sensor_value(void)
     fprintf(stderr,"%s: Error: Get analog temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i/256 C\n", value);
+  printf("%i/256 (%.2f) C\n", value, value/256.);
   return 0;
 }
 
@@ -510,7 +510,7 @@ int config_get_soft_temp_sensor_value(void)
     fprintf(stderr,"%s: Error: Get soft temperature sensor value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i/256 C\n", value);
+  printf("%i/256 (%.2f) C\n", value, value/256.);
   return 0;
 }
 
@@ -644,7 +644,7 @@ int config_get_lm75a_temp_sensor_alarm_value(void)
     fprintf(stderr,"%s: Error: Get LM75A temperature sensor alarm_value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i/256 C\n", alarm_value);
+  printf("%i/256 (%.2f) C\n", alarm_value, alarm_value/256.);
   return 0;
 }
 
@@ -659,7 +659,7 @@ int config_get_analog_temp_sensor_alarm_value(void)
     fprintf(stderr,"%s: Error: Get analog temperature sensor alarm_value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i/256 C\n", alarm_value);
+  printf("%i/256 (%.2f) C\n", alarm_value, alarm_value/256.);
   return 0;
 }
 
@@ -674,7 +674,7 @@ int config_get_soft_temp_sensor_alarm_value(void)
     fprintf(stderr,"%s: Error: Get soft temperature sensor alarm_value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%i/256 C\n", alarm_value);
+  printf("%i/256 (%.2f) C\n", alarm_value, alarm_value/256.);
   return 0;
 }
 
@@ -1379,20 +1379,20 @@ int config_calibrate_fan_voltage_response(void)
 {
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
-  uint16_t min_voltage, intermediate_voltage;
+  uint16_t low_proportional_output, mid_proportional_output;
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
-    fprintf(stderr,"%s: Error: Missing fan min_voltage value!\n",__func__);
+    fprintf(stderr,"%s: Error: Missing fan low_proportional_output value!\n",__func__);
     return -1;
   }
-  sscanf(gGlobals.pbuf, "%" SCNu16, &min_voltage);
+  sscanf(gGlobals.pbuf, "%" SCNu16, &low_proportional_output);
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
-    fprintf(stderr,"%s: Error: Missing fan intermediate_voltage value!\n",__func__);
+    fprintf(stderr,"%s: Error: Missing fan mid_proportional_output value!\n",__func__);
     return -1;
   }
-  sscanf(gGlobals.pbuf, "%" SCNu16, &intermediate_voltage);
-  int ret=calibrate_fan_voltage_response_cmd(id, min_voltage, intermediate_voltage);
+  sscanf(gGlobals.pbuf, "%" SCNu16, &mid_proportional_output);
+  int ret=calibrate_fan_voltage_response_cmd(id, low_proportional_output, mid_proportional_output);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Calibrate fan voltage response failed with error %i!\n",__func__, ret);
@@ -1405,7 +1405,7 @@ int config_calibrate_fan_duty_cycle_response(void)
 {
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
-  uint8_t min_duty_cycle, intermediate_duty_cycle;
+  uint8_t min_duty_cycle, mid_duty_cycle;
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
     fprintf(stderr,"%s: Error: Missing fan min_duty_cycle value!\n",__func__);
@@ -1414,11 +1414,11 @@ int config_calibrate_fan_duty_cycle_response(void)
   sscanf(gGlobals.pbuf, "%" SCNu8, &min_duty_cycle);
 
   if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
-    fprintf(stderr,"%s: Error: Missing fan intermediate_duty_cycle value!\n",__func__);
+    fprintf(stderr,"%s: Error: Missing fan mid_duty_cycle value!\n",__func__);
     return -1;
   }
-  sscanf(gGlobals.pbuf, "%" SCNu8, &intermediate_duty_cycle);
-  int ret=calibrate_fan_duty_cycle_response_cmd(id, min_duty_cycle, intermediate_duty_cycle);
+  sscanf(gGlobals.pbuf, "%" SCNu8, &mid_duty_cycle);
+  int ret=calibrate_fan_duty_cycle_response_cmd(id, min_duty_cycle, mid_duty_cycle);
 
   if(ret) {
     fprintf(stderr,"%s: Error: Calibrate fan duty cycle response failed with error %i!\n",__func__, ret);
