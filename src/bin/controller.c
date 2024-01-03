@@ -13,8 +13,8 @@ int main(int nargs, const char* args[])
   sl_set_callback(DEVICE_OVERTEMP_CMD_ID, device_overtemp_cmd);
 
   sl_set_callback(LM75A_TEMP_SENSOR_ALARM_CMD_ID, lm75a_temp_sensor_alarm_cmd);
-  sl_set_callback(ANALOG_TEMP_SENSOR_ALARM_CMD_ID, lm75a_temp_sensor_alarm_cmd);
-  sl_set_callback(SOFT_TEMP_SENSOR_ALARM_CMD_ID, lm75a_temp_sensor_alarm_cmd);
+  sl_set_callback(ANALOG_TEMP_SENSOR_ALARM_CMD_ID, analog_temp_sensor_alarm_cmd);
+  sl_set_callback(SOFT_TEMP_SENSOR_ALARM_CMD_ID, soft_temp_sensor_alarm_cmd);
 
   fprintf(stderr,"Opening '%s'\n",args[1]);
 
