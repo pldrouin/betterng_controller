@@ -85,6 +85,7 @@ void config_ht_populate()
   HT_SET_FUNC(get_analog_temp_sensor_list);
   HT_SET_FUNC(add_analog_temp_sensor);
   HT_SET_FUNC(del_analog_temp_sensor);
+  HT_SET_FUNC(get_analog_temp_sensor_adc_value);
   HT_SET_FUNC(get_lm75a_temp_sensor_value);
   HT_SET_FUNC(get_analog_temp_sensor_value);
   HT_SET_FUNC(get_soft_temp_sensor_value);
@@ -160,6 +161,7 @@ int config_help(void)
   printf(BSTR "get_analog_temp_sensor_list" UBSTR "\n");
   printf(BSTR "add_analog_temp_sensor" UBSTR " id\n");
   printf(BSTR "del_analog_temp_sensor" UBSTR " id\n");
+  printf(BSTR "get_analog_temp_sensor_adc_value" UBSTR " id\n");
   printf(BSTR "get_lm75a_temp_sensor_value" UBSTR " id\n");
   printf(BSTR "get_analog_temp_sensor_value" UBSTR " id\n");
   printf(BSTR "get_soft_temp_sensor_value" UBSTR " id\n");
@@ -470,6 +472,21 @@ int config_del_analog_temp_sensor(void)
     fprintf(stderr,"%s: Error: Delete analog temperature sensor failed with error %i!\n",__func__, ret);
     return ret;
   }
+  return 0;
+}
+
+int config_get_analog_temp_sensor_adc_value(void)
+{
+  uint8_t id;
+  CONFIG_GET_SENSOR_ID(id);
+  uint16_t adc_value;
+  int ret=send_receive_get_analog_temp_sensor_adc_value_cmd(id, &adc_value);
+
+  if(ret) {
+    fprintf(stderr,"%s: Error: Get analog temperature sensor ADC value failed with error %i!\n",__func__, ret);
+    return ret;
+  }
+  printf("0x%04X\t%" SCNu16 "\n", adc_value, adc_value);
   return 0;
 }
 
@@ -1229,7 +1246,7 @@ int config_switch_fan_mode(void)
 int config_get_fan_adc_value(void)
 {
   uint8_t id;
-  int16_t adc_value;
+  uint16_t adc_value;
   CONFIG_GET_FAN_ID(id);
 
   int ret=send_receive_get_fan_adc_value_cmd(id, &adc_value);
@@ -1238,7 +1255,7 @@ int config_get_fan_adc_value(void)
     fprintf(stderr,"%s: Error: Get fan adc value failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("%" SCNi16 "\n",adc_value);
+  printf("0x%04X\t%" SCNu16 "\n", adc_value, adc_value);
   return 0;
 }
 

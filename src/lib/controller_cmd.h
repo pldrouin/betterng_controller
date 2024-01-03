@@ -38,6 +38,7 @@ int send_receive_del_lm75a_temp_sensor_cmd(const uint8_t id);
 int send_receive_get_analog_temp_sensor_list_cmd(uint8_t* const list);
 int send_receive_add_analog_temp_sensor_cmd(const uint8_t id);
 int send_receive_del_analog_temp_sensor_cmd(const uint8_t id);
+int send_receive_get_analog_temp_sensor_adc_value_cmd(const uint8_t id, uint16_t* const adc_value);
 int send_receive_get_lm75a_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_analog_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
 int send_receive_get_soft_temp_sensor_value_cmd(const uint8_t id, int16_t* const value);
@@ -83,7 +84,7 @@ int send_receive_get_fan_rpm_cmd(const uint8_t id, int16_t* const rpm);
 
 int send_receive_get_fan_mode_cmd(const uint8_t id, uint8_t* const mode);
 int send_receive_switch_fan_mode_cmd(const uint8_t id, const uint8_t mode);
-int send_receive_get_fan_adc_value_cmd(const uint8_t id, int16_t* const adc_value);
+int send_receive_get_fan_adc_value_cmd(const uint8_t id, uint16_t* const adc_value);
 int send_receive_get_fan_output_cmd(const uint8_t id, uint8_t* const output);
 int send_receive_set_fan_output_cmd(const uint8_t id, const uint8_t output);
 int send_receive_set_fan_output_auto_cmd(const uint8_t id, const uint8_t output);

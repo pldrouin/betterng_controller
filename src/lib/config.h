@@ -50,6 +50,7 @@ int config_del_lm75a_temp_sensor(void);
 int config_get_analog_temp_sensor_list(void);
 int config_add_analog_temp_sensor(void);
 int config_del_analog_temp_sensor(void);
+int config_get_analog_temp_sensor_adc_value(void);
 int config_get_lm75a_temp_sensor_value(void);
 int config_get_analog_temp_sensor_value(void);
 int config_get_soft_temp_sensor_value(void);

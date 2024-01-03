@@ -60,6 +60,16 @@ int send_receive_del_analog_temp_sensor_cmd(const uint8_t id)
   return 0;
 }
 
+int send_receive_get_analog_temp_sensor_adc_value_cmd(const uint8_t id, uint16_t* const adc_value)
+{
+  struct req_resp rr={{GET_ANALOG_TEMP_SENSOR_ADC_VALUE_CMD_REQ_ID, {id}, 1},{GET_ANALOG_TEMP_SENSOR_ADC_VALUE_CMD_RESP_ID}};
+  int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
+
+  if(ret) return ret;
+  *adc_value=be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  return 0;
+}
+
 int send_receive_get_lm75a_temp_sensor_value_cmd(const uint8_t id, int16_t* const value)
 {
   struct req_resp rr={{GET_LM75A_TEMP_SENSOR_VALUE_CMD_REQ_ID, {id}, 1},{GET_LM75A_TEMP_SENSOR_VALUE_CMD_RESP_ID}};
@@ -517,14 +527,14 @@ int send_receive_get_fan_output_cmd(const uint8_t id, uint8_t* const output)
   return 0;
 }
 
-int send_receive_get_fan_adc_value_cmd(const uint8_t id, int16_t* const adc_value)
+int send_receive_get_fan_adc_value_cmd(const uint8_t id, uint16_t* const adc_value)
 {
   CHECK_FAN_ID(id);
   struct req_resp rr={{GET_FAN_ADC_VALUE_CMD_REQ_ID, {id}, 1},{GET_FAN_ADC_VALUE_CMD_RESP_ID}};
   int ret=send_recv_cmd(&gGlobals.sl_dev, &rr);
 
   if(ret) return ret;
-  *adc_value=(int16_t)be16toh(*(uint16_t*)&rr.resp.bytes[0]);
+  *adc_value=be16toh(*(uint16_t*)&rr.resp.bytes[0]);
   return 0;
 }
 
