@@ -6,7 +6,7 @@ int main(int nargs, const char* args[])
 {
 
   if(nargs<2) {
-    fprintf(stderr,"Usage: %s device baud_rate [commands]\n",args[0]);
+    fprintf(stderr,"Usage: %s device [commands]\n",args[0]);
     return 1;
   }
 
