@@ -546,9 +546,9 @@ int config_get_lm75a_temp_sensor_calib(void)
     fprintf(stderr,"%s: Error: Get LM75a temperature sensor calibration failed with error %i!\n",__func__, ret);
     return ret;
   }
-  printf("a0 = %" SCNi16 " C\n", a0);
-  printf("a1 = %" SCNi16 " / 2^14 C\n", a1);
-  printf("a2 = %" SCNi16 " / 2^28 C\n", a2);
+  printf("a0 = %" SCNi16 " / 256 C\n", a0);
+  printf("a1 = %" SCNi16 " / (256 * 2^14) C\n", a1);
+  printf("a2 = %" SCNi16 " / (256 * 2^28) C\n", a2);
   return 0;
 }
 
@@ -581,7 +581,7 @@ int config_get_analog_temp_sensor_calib1(void)
     return ret;
   }
   printf("a2 = %22.15f\n", a2);
-  printf("shift = %" SCNi16 " C\n", shift);
+  printf("shift = %" SCNi16 " / 256 C\n", shift);
   return 0;
 }
 

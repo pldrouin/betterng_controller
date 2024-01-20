@@ -9,7 +9,6 @@
 
 #ifdef __FreeBSD__
 #define B500000 500000
-#define B1000000 1000000
 #endif
 
 int serial_init(device *sdev, const char *port, const uint32_t baudrate)
@@ -54,7 +53,12 @@ int serial_init(device *sdev, const char *port, const uint32_t baudrate)
 
   memset(&tio,0,sizeof(tio));
   tio.c_iflag = IGNBRK | IGNPAR;
+
+#ifdef __FreeBSD__
+  tio.c_oflag &= ~(OPOST|ONLCR|OCRNL|ONOCR|ONLRET);
+#else
   tio.c_oflag &= ~(OPOST|OLCUC|ONLCR|OCRNL|ONOCR|ONLRET);
+#endif
   tio.c_cflag |= CS8|CREAD|CLOCAL|HUPCL;
   tio.c_lflag &= ~(ISIG|ICANON|ECHO|IEXTEN);
   //printf("c_oflag=%u\n",tio.c_oflag);
