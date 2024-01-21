@@ -28,8 +28,8 @@ $(ALLINCS): include/%: $(LDIR)/%
 	mkdir -p include
 	cp $^ $@
 
-$(LIB): $(LOBJS)
-	$(CC) $(LCFLAGS) -fPIC -shared $(LDFLAGS) -o $@ $^ $(LIBARGSDIR)/libargs.sa $(LIBHTDIR)/libht.sa $(LLIBS)
+$(LIB): $(LOBJS) $(LIBARGSDIR)/libargs.sa $(LIBHTDIR)/libht.sa
+	$(CC) $(LCFLAGS) -fPIC -shared $(LDFLAGS) -o $@ $^ $(LLIBS)
 
 $(LOBJS): %.o: %.c
 	$(CC) -fPIC -c -o $@ $(LCFLAGS) $<

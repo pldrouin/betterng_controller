@@ -12,7 +12,9 @@ int config()
 
   gGlobals.oout=1; //stdout==1
   gGlobals.eout=2; //stderr==2
-
+  
+  gGlobals.interactive=false;
+ 
   gGlobals.ht=ht_create();
   config_ht_populate();
 
@@ -26,9 +28,15 @@ int config()
     while((gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf))>0) {
       cfunct=(int (*)(void))ht_get(gGlobals.ht, gGlobals.pbuf);
 
-      if(cfunct) cfunct();
+      if(cfunct) {
 
-      else {
+	if(cfunct()) {
+	  fprintf(stderr,"%s: Error: Invalid command!\n",__func__);
+	  ht_destroy(gGlobals.ht);
+	  return 1;
+	}
+
+      } else {
 	fprintf(stderr,"%s: Error: Unknown parameter: '%s'\n",__func__,gGlobals.pbuf);
 	ht_destroy(gGlobals.ht);
 	return 1;
@@ -44,10 +52,10 @@ int config()
 
     //If reading argument from the standard input (interactive mode), we
     //indicate that the job is completed through the standard output
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunused-result"
-    if(gGlobals.fptri!=-1 && gGlobals.fptra[gGlobals.fptri] == stdin) write(gGlobals.oldstderr,"@DONE\n",6);
-    #pragma GCC diagnostic pop
+    if(gGlobals.interactive) {
+      write(gGlobals.oldstderr,"@DONE\n",6);
+      gGlobals.interactive=false;
+    }
     fflush(stdout);
     fflush(stderr);
     //Continue reading other commands for the next job
@@ -146,6 +154,8 @@ void config_ht_populate()
   HT_SET_FUNC(calibrate_fan_duty_cycle_response);
   HT_SET_FUNC(get_fan_mode_transitions);
   HT_SET_FUNC(set_fan_mode_transitions);
+
+  HT_SET_FUNC(exit);
 }
 
 int config_help(void)
@@ -217,6 +227,8 @@ int config_help(void)
   printf(BSTR "calibrate_fan_voltage_response" UBSTR " fan_id low_proportional_output mid_proportional_output|0\n"); 
   printf(BSTR "get_fan_mode_transitions" UBSTR " fan_id\n"); 
   printf(BSTR "set_fan_mode_transitions" UBSTR " fan_id pwm_to_voltage_output voltage_to_pwm_output\n"); 
+
+  printf(BSTR "exit" UBSTR "\n"); 
   return 0;
 }
 
@@ -235,6 +247,7 @@ int config_config(void)
       gGlobals.fptri++;
       gGlobals.fptra=(FILE**)realloc(gGlobals.fptra,(gGlobals.fptri+1)*sizeof(FILE*));
       gGlobals.fptra[gGlobals.fptri]=stdin;
+      gGlobals.interactive=true;
       #pragma GCC diagnostic push
       #pragma GCC diagnostic ignored "-Wunused-result"
       write(gGlobals.oldstderr,"@INTERACTIVE\n",13);
@@ -243,11 +256,13 @@ int config_config(void)
 
     //Otherwise, if reading from a configuration file
   } else {
-    gGlobals.fptri++;
+    printf("Reading from config file %s\n",gGlobals.pbuf);
+    ++(gGlobals.fptri);
     gGlobals.fptra=(FILE**)realloc(gGlobals.fptra,(gGlobals.fptri+1)*sizeof(FILE*));
 
     if(!(gGlobals.fptra[gGlobals.fptri]=fopen(gGlobals.pbuf,"r"))) {
       fprintf(stderr,"%s: Error: Cannot open file '%s' in read mode\n",__func__,gGlobals.pbuf);
+      --(gGlobals.fptri);
       ht_destroy(gGlobals.ht);
       return 1;
     }
@@ -300,13 +315,16 @@ int config_prompt(void)
   size_t n;
   ssize_t ret;
   int oldnargs=gGlobals.nargs;
+  const int initptri=gGlobals.fptri;
   const char** oldargs=gGlobals.args;
   int oldparc=gGlobals.parc;
+  int curparc;
   gGlobals.nargs=-1;
   gGlobals.parc=-2;
   gGlobals.args=(char const**)&charptr;
 
   int (*cfunct)(void);
+  int cret;
 
   do {
 next_line:
@@ -324,41 +342,56 @@ next_line:
       break;
     }
 
-    do {
+    for(;;) {
+      //printf("Inner loop\n");
+      //Prioritise reading from prompt if a new configuration file has not been loaded from prompt
 
-      while((gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf))>0) {
-	cfunct=(int (*)(void))ht_get(gGlobals.ht, gGlobals.pbuf);
+      if(gGlobals.fptri==initptri) gGlobals.parc=-2;
 
-	if(cfunct) {
-	  if(cfunct()==0) goto next_line;
+      else gGlobals.parc=-1;
+      gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf);
 
-	} else {
-	  fprintf(stderr,"%s: Error: Unknown command: '%s'\n",__func__,gGlobals.pbuf);
+      if(gGlobals.plength<=0) {
+
+	if(gGlobals.fptri>initptri) continue;
+
+	else {
 	  free(lineptr);
 	  goto next_line;
 	}
       }
+      cfunct=(int (*)(void))ht_get(gGlobals.ht, gGlobals.pbuf);
 
-      //Assertion: We are ready to perform a task whether a break statement has
-      //been reached in the inner loop or plength<=0. Otherwise the value of
-      //plength can be assessed and appropriate actions can be taken
+      if(cfunct) {
+	cret=cfunct();
 
-      //All the parameters for the current job have been read, the job can now be
-      //performed. Do it here
+	if(cret == CONFIG_EXIT_RET) goto exit_prompt;
 
-      //If reading argument from the standard input (interactive mode), we
-      //indicate that the job is completed through the standard output
-      #pragma GCC diagnostic push
-      #pragma GCC diagnostic ignored "-Wunused-result"
-      if(gGlobals.fptri!=-1 && gGlobals.fptra[gGlobals.fptri] == stdin) write(gGlobals.oldstderr,"@DONE\n",6);
-      #pragma GCC diagnostic pop
-      fflush(stdout);
-      fflush(stderr);
-      //Continue reading other commands for the next job
+	if(gGlobals.fptri>initptri) {
 
-    } while(gGlobals.plength>0);
+	  //Continue reading config file or interactive mode only if no
+	  //error is returned
+	  if(cret) {
+	    args_close_all_files_down_to_level(gGlobals.fptra,&gGlobals.fptri,initptri);
+	    free(lineptr);
+	    goto next_line;
+	  }
+
+	} else {
+	  free(lineptr);
+	  goto next_line;
+	}
+
+      } else {
+	fprintf(stderr,"%s: Error: Unknown command: '%s'\n",__func__,gGlobals.pbuf);
+	free(lineptr);
+	goto next_line;
+      }
+    }
 
   } while(charptr == lineptr+ret);
+
+exit_prompt:
   printf("\n");
   gGlobals.nargs=oldnargs;
   gGlobals.args=oldargs;
@@ -1532,3 +1565,7 @@ int config_set_fan_mode_transitions(void)
   return 0;
 }
 
+int config_exit(void)
+{
+  return CONFIG_EXIT_RET;
+}

@@ -13,6 +13,8 @@
 
 #include "controller_cmd.h"
 
+#define CONFIG_EXIT_RET (INT32_MAX)
+
 int config();
 void config_ht_populate();
 
@@ -112,5 +114,7 @@ int config_set_fan_mode_transitions(void);
 
 int config_calibrate_fan_voltage_response(void);
 int config_calibrate_fan_duty_cycle_response(void);
+
+int config_exit(void);
 
 #endif

@@ -23,6 +23,8 @@ struct globals
   int oout;
   int eout;
 
+  bool interactive;
+
   sl_device sl_dev;
 };
 
