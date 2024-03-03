@@ -25,7 +25,7 @@ int config()
 
   while(gGlobals.plength>0) {
 
-    while((gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf))>0) {
+    while((gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE))>0) {
       cfunct=(int (*)(void))ht_get(gGlobals.ht, gGlobals.pbuf);
 
       if(cfunct) {
@@ -234,7 +234,7 @@ int config_help(void)
 
 int config_config(void)
 {
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing configuration file name!\n",__func__);
     return -1;
   }
@@ -273,7 +273,7 @@ int config_config(void)
 //Output file log, redirecting the standard output
 int config_olog(void)
 {
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing output log file name!\n",__func__);
     return -1;
   }
@@ -292,7 +292,7 @@ int config_olog(void)
 //Output error file log, redirecting the standard error
 int config_elog(void)
 {
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing error log file name!\n",__func__);
     return -1;
   }
@@ -349,7 +349,7 @@ next_line:
       if(gGlobals.fptri==initptri) gGlobals.parc=-2;
 
       else gGlobals.parc=-1;
-      gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf);
+      gGlobals.plength=getnextparam(gGlobals.fptra,&gGlobals.fptri,false,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE);
 
       if(gGlobals.plength<=0) {
 
@@ -624,19 +624,19 @@ int config_set_lm75a_temp_sensor_calib(void)
   CONFIG_GET_SENSOR_ID(id);
   int16_t a0, a1, a2;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing a0 parameter!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf,"%" SCNi16, &a0);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing a1 parameter!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf,"%" SCNi16, &a1);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing a2 parameter!\n",__func__);
     return -1;
   }
@@ -656,13 +656,13 @@ int config_set_analog_temp_sensor_calib0(void)
   CONFIG_GET_SENSOR_ID(id);
   float a0, a1;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing a0 parameter!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf,"%f", &a0);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing a1 parameter!\n",__func__);
     return -1;
   }
@@ -684,13 +684,13 @@ int config_set_analog_temp_sensor_calib1(void)
   float a2;
   int16_t shift;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing a2 parameter!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf,"%f", &a2);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing shift parameter!\n",__func__);
     return -1;
   }
@@ -711,7 +711,7 @@ int config_set_soft_temp_sensor_value(void)
   CONFIG_GET_SENSOR_ID(id);
   int16_t value;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing value parameter!\n",__func__);
     return -1;
   }
@@ -777,7 +777,7 @@ int config_set_lm75a_temp_sensor_alarm_value(void)
   CONFIG_GET_SENSOR_ID(id);
   int16_t alarm_value;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing alarm_value parameter!\n",__func__);
     return -1;
   }
@@ -798,7 +798,7 @@ int config_set_analog_temp_sensor_alarm_value(void)
   CONFIG_GET_SENSOR_ID(id);
   int16_t alarm_value;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing alarm_value parameter!\n",__func__);
     return -1;
   }
@@ -819,7 +819,7 @@ int config_set_soft_temp_sensor_alarm_value(void)
   CONFIG_GET_SENSOR_ID(id);
   int16_t alarm_value;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing alarm_value parameter!\n",__func__);
     return -1;
   }
@@ -1016,14 +1016,14 @@ int config_add_fan_curve_point(void)
   CONFIG_GET_FAN_ID(fan_id);
   int8_t temp;
   
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing temperature parameter!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf,"%" SCNi8, &temp);
   uint8_t output;
   
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing output parameter!\n",__func__);
     return -1;
   }
@@ -1043,7 +1043,7 @@ int config_del_fan_curve_point(void)
   CONFIG_GET_FAN_ID(fan_id);
   uint8_t index;
   
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan curve point index parameter!\n",__func__);
     return -1;
   }
@@ -1078,7 +1078,7 @@ int config_get_fan_curve_point(void)
   CONFIG_GET_FAN_ID(fan_id);
   uint8_t index;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan curve point index value!\n",__func__);
     return -1;
   }
@@ -1117,7 +1117,7 @@ int config_set_fan_hysterisis(void)
   uint8_t hysterisis;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan hysterisis value!\n",__func__);
     return -1;
   }
@@ -1153,7 +1153,7 @@ int config_set_fan_max_rpm(void)
   CONFIG_GET_FAN_ID(id);
   int16_t max_rpm;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan max RPM value!\n",__func__);
     return -1;
   }
@@ -1193,7 +1193,7 @@ int config_set_fan_min_rpm(void)
   CONFIG_GET_FAN_ID(id);
   int16_t min_rpm;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan min RPM value!\n",__func__);
     return -1;
   }
@@ -1248,7 +1248,7 @@ int config_switch_fan_mode(void)
   uint8_t id;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan mode!\n",__func__);
     return -1;
   }
@@ -1314,7 +1314,7 @@ int config_set_fan_output(void)
   uint8_t output;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan output value!\n",__func__);
     return -1;
   }
@@ -1334,7 +1334,7 @@ int config_set_fan_output_auto(void)
   uint8_t output;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan output value!\n",__func__);
     return -1;
   }
@@ -1375,13 +1375,13 @@ int config_set_fan_duty_cycle_response(void)
   int16_t ddcdout;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan dc_no_out value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu16, &dcnoout);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan ddcdout value!\n",__func__);
     return -1;
   }
@@ -1435,13 +1435,13 @@ int config_set_fan_voltage_response(void)
   int16_t dvdout;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan v_no_out value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu16, &vnoout);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan dvdout value!\n",__func__);
     return -1;
   }
@@ -1474,13 +1474,13 @@ int config_calibrate_fan_voltage_response(void)
   CONFIG_GET_FAN_ID(id);
   uint16_t low_proportional_output, mid_proportional_output;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan low_proportional_output value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu16, &low_proportional_output);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan mid_proportional_output value!\n",__func__);
     return -1;
   }
@@ -1500,13 +1500,13 @@ int config_calibrate_fan_duty_cycle_response(void)
   CONFIG_GET_FAN_ID(id);
   uint8_t min_duty_cycle, mid_duty_cycle;
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan min_duty_cycle value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu8, &min_duty_cycle);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan mid_duty_cycle value!\n",__func__);
     return -1;
   }
@@ -1545,13 +1545,13 @@ int config_set_fan_mode_transitions(void)
   uint8_t voltage_to_pwm_output;
   CONFIG_GET_FAN_ID(id);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan pwm_to_voltage_output value!\n",__func__);
     return -1;
   }
   sscanf(gGlobals.pbuf, "%" SCNu8, &pwm_to_voltage_output);
 
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {
     fprintf(stderr,"%s: Error: Missing fan voltage_to_pwm_output value!\n",__func__);
     return -1;
   }

@@ -6,6 +6,8 @@
 
 #include "serial_link.h"
 
+#define PBUF_SIZE (1024)
+
 struct globals
 {
   struct ht* ht;
@@ -13,7 +15,7 @@ struct globals
   const char** args;
   FILE **fptra;
   int fptri;
-  char pbuf[1024];
+  char pbuf[PBUF_SIZE];
   int parc;
 
   int plength;

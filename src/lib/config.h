@@ -29,7 +29,7 @@ int config_ping(void);
 int config_reset(void);
 
 #define CONFIG_GET_FAN_ID(id) ({\
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {\
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {\
     fprintf(stderr,"%s: Error: Missing fan ID!\n",__func__);\
     return -1;\
   }\
@@ -37,7 +37,7 @@ int config_reset(void);
 })
 
 #define CONFIG_GET_SENSOR_ID(id) ({\
-  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf)<0) {\
+  if(getnextparam(gGlobals.fptra,&gGlobals.fptri,true,gGlobals.nargs,gGlobals.args,&gGlobals.parc,gGlobals.pbuf,PBUF_SIZE)<0) {\
     fprintf(stderr,"%s: Error: Missing sensor ID!\n",__func__);\
     return -1;\
   }\
