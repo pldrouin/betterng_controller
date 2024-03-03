@@ -2,6 +2,7 @@
 #define _CONTROLLER_GLOBALS_
 
 #include <stdio.h>
+#include "args.h"
 #include "ht.h"
 
 #include "serial_link.h"
@@ -11,12 +12,8 @@
 struct globals
 {
   struct ht* ht;
-  int nargs;
-  const char** args;
-  FILE **fptra;
-  int fptri;
+  args_info a_h;
   char pbuf[PBUF_SIZE];
-  int parc;
 
   int plength;
 

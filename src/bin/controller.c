@@ -24,10 +24,8 @@ int main(int nargs, const char* args[])
 
   args+=2;
   nargs-=2;
-  gGlobals.nargs=nargs;
-  gGlobals.args=args;
 
-  config();
+  config(nargs, args);
 
   sl_close(&gGlobals.sl_dev);
 
