@@ -300,7 +300,7 @@ int config_elog(void)
 int prompt_callback(const char* param, void* ptr) {
   struct globals* globals=(struct globals*)ptr;
 
-  int (*cfunct)(void)=(int (*)(void))ht_get(gGlobals.ht, param);
+  int (*cfunct)(void)=(int (*)(void))ht_get(globals->ht, param);
   int cret;
 
   if(cfunct) {
