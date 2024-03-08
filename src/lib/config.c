@@ -35,7 +35,7 @@ int config(int nargs, const char** args)
 	}
 
       } else {
-	fprintf(stderr,"%s: Error: Unknown parameter: '%s'\n",__func__,gGlobals.pbuf);
+	fprintf(stderr,"%s: Error: Invalid command: '%s'\n",__func__,gGlobals.pbuf);
 	ht_destroy(gGlobals.ht);
 	return 1;
       }
